@@ -1,0 +1,114 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_split.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mprunty <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/11/17 23:00:08 by mprunty           #+#    #+#             */
+/*   Updated: 2023/12/06 21:39:56 by mprunty          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+#include "libft.h"
+
+/*
+int	count_char(char const * s, char c)
+{
+	int	i;
+	int	n;
+
+	i = 1;
+	n = ft_strlen(s);	
+	if (!s)
+		return 0;
+	if (s[0] == c)
+		i-=1;
+	if (s[n-1]==c)
+		i-=1;
+	while(*s)
+	{
+		if ((*s ==c) && (*(s+1) != c))
+			i++;
+		s++;
+	}
+	return i;
+}
+*/
+
+static size_t	count_char(char const *s, char c)
+{
+	size_t	count;
+
+	if (!*s)
+		return (0);
+	count = 0;
+	while (*s)
+	{
+		while (*s == c)
+			s++;
+		if (*s)
+			count++;
+		while (*s != c && *s)
+			s++;
+	}
+	return (count);
+}
+
+char	**ft_split(char const *s, char c)
+{
+	int	n;
+	char	*end;
+	int	len;
+	int	i;
+	char	*ptr;
+	char	**dblptr;
+
+	i = 0;
+	n = count_char(s,c);
+	dblptr = (char **)malloc((n+1)*(sizeof(char*)));
+	
+	if (!dblptr || !s)
+		return NULL;	
+	while(*s)
+	{
+		len=1;
+		if (*s != c)
+		{
+			end = ft_strchr(s,c);
+			if(!end)
+				len = ft_strlen(s);
+			else
+				len = (end-s);
+			if (s != end && i<=n && len )
+			{
+				ptr = ft_calloc(len+1, sizeof(char));
+				if(!ptr)
+					return NULL;
+				ft_strlcpy(ptr, s, len+1);
+				dblptr[i++] = ptr;
+			}
+		}
+		s+=len;
+	}
+	dblptr[i] = NULL;
+	return dblptr;
+}
+/*
+void printdp(char **dblptr)
+{
+        int i = 0;
+        while(dblptr[i]){
+                printf("\nft_split, str %i :%s", i ,(dblptr[i]));
+                i++;
+        }
+        return;
+}
+
+int main()
+{
+	char	*s;
+	s = "      split       this for   me  !       ";
+        printdp(ft_split(s, ' '));
+
+}
+*/
