@@ -1,15 +1,28 @@
-#include <mlx.h>
-#include <libft.h>
-#include <math.h>
+#include "../include/fractol.h"
+#include <stdio.h>
 
-typedef struct	s_data {
-	void	*img;
-	char	*addr;
-	int		bits_per_pixel;
-	int		line_length;
-	int		endian;
-}				t_data;
 static unsigned long int next = 1;
+
+
+int	error_code(int i)
+{
+    if (i==0)
+        return(0);
+    ft_putendl_fd("Error", 2);
+    if (i == 1)
+        printf("%s","malloc failed");
+    else if (i == 2)
+        printf("%s","lst len is to short");
+    else if (i == 3)
+        printf("%s","mlx_window error");
+    else if (i == 4)
+        printf("%s","mlx_display error");
+    else if (i == 5)
+        printf("%s","push failed");
+    else if (i == 6)
+        printf("%s","turk sort failed");
+    return (0);
+}
 
 int ft_rand(void)  /* RAND_MAX assumed to be 32767. */
 {
@@ -22,132 +35,125 @@ void ft_srand(unsigned seed)
     next = seed;
 }
 
-void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
-{
-	char	*dst;
-
-	dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel/ 4 ));
-	*(unsigned int*)dst = color ;
-}
 
 int	create_trgb(int t, int r, int g, int b)
 {
 	return (t << 24 | r << 16 | g << 8 | b);
 }
-
-draw_circle( int h, int k, int r, t_data *img)
+/*
+ *  x^2 + y^2 +  2xyi
+ *  |       \   \   \
+ *    Real      imAGINERY
+ */
+int draw_line(void *mlx,  int beginX, int beginY, int endX, int endY, int color)
 {
-	float dy = 0;
-	float dx = 0;
-	int  col =0;
-	float maxh;
-	float maxw;
-	int pi = M_PI;
-	int theta = 0 ;
+    double deltaX = endX - beginX; // 10
+    double deltaY = endY - beginY; // 0
+    int pixels = ft_sqrtbs((deltaX * deltaX) + (deltaY * deltaY));
 
-	//col = 0x00FF0000;
+    double pixelX = beginX;
+    double pixelY = beginY;
+    while (pixels)
+    {
+        my_mlx_pixel_put(mlx,  pixelX, pixelY, color);
+        pixelX += deltaX / pixels;
+        pixelY += deltaY / pixels;
+        --pixels;
+    }
 
-	maxh = r+h;
-	maxw = r+k;
-	while ((theta)++ <  2*pi*pow(r,2)){
-		dx = r * cos( theta ) +h + (ft_rand()% 4);
-		dy = r * sin( theta ) +k + (ft_rand()% 4);
-		//printf("%i,%i, %f ", dx,dy, dx/dy);
-		//col = create_trgb(255,(int)(1-(dx/maxh)*255),1 ,(int)((dx/maxh)*255));
-		col = create_trgb(255,((1-(dy/maxw))*255),1 ,((dy/maxw)*255));
-		my_mlx_pixel_put(img, dx, dy, col);//,0x00FF0000);
-		//printf("\n%f,%f,%f, %x ", dx, (dx/maxh), 1-(dx/maxh), col);
-		printf("\n%f,%f,%f, %x ", dy, (dy/maxw), 1-(dy/maxw), col);
-	}
-
-/*/
-	dy = sqrt(fabs(pow(r,2) - pow(-x + h, 2))) + k ;
-	while(i--){	
-		printf("\n%i, %i, %x", dx,  dy, col  );
-		//col = create_trgb(1, dx/dy*255, 0, (1-(dx/dy))*255);
-		col = create_trgb(100, 255, 0, 255);
-		dx = sqrt(fabs(pow(r,2) - pow(-dy + k, 2)) ) + h ;
-		dy = sqrt(fabs(pow(r,2) - pow(-dx + h, 2))) + k ;
-		//printf("x:%f y:%f  " ,dx,  dy);}
-		my_mlx_pixel_put(img, dx, dy, col);//,0x00FF0000);
-	}
-*/
+    return 0;
 }
 
-
-
-int	main(void)
+/*
+ * set to n_error to -1 if no error
+ */
+int clean_fractal(t_fractal *f, int n_error)
 {
-	void	*mlx;
-	void	*mlx_win;
-	t_data	img;
-	float	i;
-	float	h;
-	float	w;
-	float	rh;
-	float	rw;
-	int		col;
-	float	init;
+    if (n_error >= 0 )
+        error_code(n_error);
+    if ((f->mlx_window))
+        mlx_destroy_window(f->mlx_connection, f->mlx_window);
+    if ((f->img.img))
+        mlx_destroy_display(f->mlx_connection);
+    free(f->mlx_connection);
+    return (1); 
+}
+double	ft_atof(const char *nptr)
+{
+	int	n;
+	double	res;
+	int	neg;
+    int decimal;
 
-	h = 1500;
-	w = 1000;
-	rw = 0;
-	rh = 0;//1/rw;//(w/h);
-	col = 0;
-
-	mlx = mlx_init();
-	mlx_win = mlx_new_window(mlx, h, w, "Hello world!");
-	img.img = mlx_new_image(mlx, h, w);
-	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
-	init = sqrt((pow(h, 2) + pow(w, 2)))  ;
-	/*/
-	 * while (h > 0 && w > 0)
+	n = ft_strlen(nptr)+ 1;
+	res = 0;
+	neg = 1;
+    decimal = 0;
+	while (ft_isblank(*nptr))
+		nptr ++;
+	if (nptr[0] == '-' || nptr[0] == '+')
 	{
-		//ft_printf("\n%f, %f, %f, %f", h, w, rh, rw);
-		col = create_trgb(1, i/init*255, 0, (1-(i/init))*255);
-		//printf("\n%f, %f, %f, %x", i/init, 1-(i/init), rh, col );
-		//my_mlx_pixel_put(&img, h, w, col);//,0x00FF0000);
-		i = sqrt((pow(h, 2) + pow(w, 2)))  ;
-		rh = sqrt(pow(i, 2) - pow(w, 2)) - (h/w)*1;
-		rw = sqrt(pow(i, 2) - pow(h, 2)) - (w/h)*1;
-		h = rh;
-		w = rw;
+		if (nptr[0] == '-')
+			neg *= -1;
+		nptr++;
+		n--;
 	}
-	*/
-
-	draw_circle( h/2,w/2, w/2 - 30, &img);
-	mlx_put_image_to_window(mlx, mlx_win, img.img, 0, 0);
-	mlx_loop(mlx);
-
+    while (ft_isdigit(*nptr))
+    {
+        if (!decimal)
+            res = res *  10 + (*nptr - 48);
+        else
+            res += pow(10,-decimal++) * (*nptr - 48);
+        if ( *++nptr == '.' && !decimal++)
+            ++nptr;
+    }
+    return (res * neg);
 }
 
-
-
-/*/
-#include "mlx.h"
-#include "libft.h"
-typedef struct	s_data {
-	void	*img;
-	char	*addr;
-	int		bits_per_pixel;
-	int		line_length;
-	int		endian;
-}				t_data;
-
-
-int	main(void)
+int	main(int ac, char **av)
 {
-	void	*mlx;
-	t_data	*img;
-//	void	*mlx_win;
+    t_fractal   f;
+    if (!(ac >=2) || ! ((*(av++)) && (**av == 'j' || **av == 'm')))
+        return (0);
+    // set = **av;
+    f.name = *av++;
+    if (*f.name == 'j')
+    {
+        f.c.x = ft_atof(*av++);
+        f.c.y = ft_atof(*av);
+    }
+    else
+    {
+        f.c.x = 0; 
+        f.c.y = 0;
+    }
+    init_f(&f);
+    printf("\n%f %f",f.c.x,f.c.y);
+    render_f(&f);
+    mlx_loop(f.mlx_connection);
 
-//	mlx = mlx_init();
-//	mlx_win = mlx_new_window(mlx, 1920, 1080, "Hello world!");
-//	mlx_loop(mlx);
 
-	mlx = mlx_init();
-	img->img = mlx_new_image(&mlx, 920, 680);
-	img->addr = mlx_get_data_addr(img->img, &img->bits_per_pixel, &img->line_length,
-								&img->endian);
+    clean_fractal(&f, -1);
+    /*
+     * double i = 0;
+     * while (i++ < 800)
+        printf("\n%f", scale_linear(i, -2, 2));
+    */
+    printf("\n%f",pow(3,2));
+    printf("\n%f",pow(7, 10));
+    printf("\n%f",pow(-5, 3));
+    printf("\n%f",ft_sqrtbs(7));
+    printf("\n%f",ft_sqrtbs(9));
+    printf("\n%f",ft_sqrtbs(2));
+    printf("\n%f",pow(10, -3));
+    printf("\n%f",pow(-5, -6));
+    printf("\n%f %f",f.c.x,f.c.y);
+    //printf("%f",ft_sqrt(-3));
+    return (0);
 }
-/*/
+
+/* f(z) = z^2 + c
+ * z = 0, c = 1
+ * = f(0) = 0^2 + 1
+
+*/

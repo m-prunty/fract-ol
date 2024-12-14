@@ -1,4 +1,4 @@
-NAME = fract-ol 
+NAME = fractol 
 CC = cc
 RM = rm -f
 CFLAGS = -Wall -Wextra -g -I${INC} #-Werror 
@@ -17,7 +17,7 @@ all:	$(NAME)
 
 $(NAME): 
 		@cd $(LIB) && $(MAKE) 
-		$(CC) $(CFLAGS) $(SRC_FILES) -o $(NAME) -I$(MLIBX) -L$(MLIBX) -l$(MLIBX) -L$(LIB) -Wl,-rpath=$(LIB) -lft $(INCXLIBS)
+		 $(CC) $(CFLAGS) $(SRC_FILES) -o $(NAME)  -L$(MLIBX) -l$(MLIBX) -L$(LIB) -Wl,-rpath=$(LIB) -lft $(INCXLIBS)
 
 clean:
 		@cd libft && $(MAKE) clean
