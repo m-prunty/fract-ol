@@ -1,27 +1,38 @@
-#include "../include/fractol.h"
 #include "fractol.h"
 
-int init_f(t_fractal *f)
+
+/**
+ * @brief initialise starting fractal
+ *
+ * @param f 
+ * @return 
+ */
+void    init_f(t_fractal *f)
 {
+
     f->mlx_connection = mlx_init();
     if (!(f->mlx_connection))
-        return (error_code(2));
+        return ((void)error_func(2, "Could not establish mlx_connection"));
     f->mlx_window = mlx_new_window(f->mlx_connection, HEIGHT, WIDTH, f->name);
     if (!(f->mlx_window))
-        return clean_fractal(f, 3);
+        return clean_fractal(f, 3,"Could not establish mlx_new_window" );
     f->img.img = mlx_new_image(f->mlx_connection,  HEIGHT, WIDTH);
     if (!(f->img.img))
-        return clean_fractal(f, 4);
+        return clean_fractal(f, 4, "Could not establish mlx_new_image");
     f->img.pxl_addr = mlx_get_data_addr(f->img.img,
             &f->img.bits_per_pixel,
             &f->img.line_length,
             &f->img.endian);
 
     init_events(f);
-    init_data(f);
-    return (1);
+    return ;
 
 }
+/**
+ * @brief 
+ *
+ * @param f 
+ */
 void    init_events(t_fractal *f){
     mlx_hook(f->mlx_window,
 			KeyPress,
@@ -45,15 +56,27 @@ void    init_events(t_fractal *f){
 			f);
 */
 }
-void    init_data(t_fractal *f){
-	f->zoom = 1;
-	f->shift.x = 0;
-	f->shift.y = 0;
-	f->iterations = 42;
+/**
+ * @brief 
+ *
+ * @param f 
+ */
+void    init_values(t_fractal *f, char **av){
+	f->zoom = 0.5;
+	f->iterations = 5;
 	f->escape = 4;
-    f->minmax.x = 2;
-    f->minmax.y = -2;
-    f->screensize.x = 800;
-    f->screensize.y = 0;
+    f->minmax = (t_complex){2, -2};
+	f->shift = (t_complex){0,0};//f->minmax.x, f->minmax.y};
+	f->screensize = (t_complex){800, 0};
+    if (*(f->name) == 'j')
+    {
+        f->c.x = ft_atof(*av++);
+        f->c.y = ft_atof(*av);
+    }
+    else
+    {
+        f->c.x = 0; 
+        f->c.y = 0;
+    }
     return ;
 }

@@ -37,12 +37,25 @@ double  ft_sqrtbs(double n)
   }
   return mid;
 }
-double  scale_linear(double n, t_complex new_minmax, t_complex old_minmax)
+/**
+ * @brief y = y1 + ((x-x1) * (y2-y1) / (x2-x1))
+ *
+ * @param n 
+ * @param p1 
+ * @param p2 
+ * @return 
+ */
+double  scale_linear(double n, t_complex p1, t_complex p2)
 {
-
-    return (((new_minmax.x - new_minmax.y) * (n ) /( old_minmax.x )) + new_minmax.y);
+    return (p1.y + ((n -p1.x) * (p2.y - p1.y)/ p2.x - p1.x));
 }
 
+/**
+ * @brief (x + yi)^2 = (x^2 - y^2) + 2xyi
+ *
+ * @param z 
+ * @return 
+ */
 t_complex   ft_complex_sqrd(t_complex z)
 {
     t_complex   c;
