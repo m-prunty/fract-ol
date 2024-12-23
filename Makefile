@@ -4,16 +4,18 @@
 NAME		:= fractol 
 LIBFT       := ./libft
 LIBFT_LIB   := $(LIBFT)/libft.a
-LDFLAGS     := -L$(LIBFT) -lft
-INCLUDE     := -I$(LIBFT)/include -Iinclude
+MLIBX		:= minilibx-linux
+MLIBX_LIB	:= $(MLIBX)/libmlx.a
+
+LDFLAGS     := -L$(LIBFT) -lft -L$(MLIBX) -lmlx
+INCLUDE     := -I$(LIBFT)/include  -Iinclude -I$(MLIBX)
 FLAGS       := -Wall -Wextra -Werror -g
 SRCDIR      := src
 OBJDIR      := obj
 
-MLIBX		:= minilibx-linux
 XLIBS		:= -lXext -lX11 -lm -lz 
 
-CC 			:= gcc $(FLAGS) $(INCLUDE)
+CC 			:= gcc $(FLAGS) $(INCLUDE) $(XLIBS) $(LDFLAGS)
 ################################################################################
 #                                     COLOURS                                  #
 ################################################################################
@@ -44,21 +46,26 @@ endef
 ################################################################################
 #                                COMPILATION                                   #
 ################################################################################
-all: check-and-reinit-submodules $(LIBFT_LIB) banner $(NAME)
+all: check-and-reinit-submodules $(LIBFT_LIB) $(MLIBX_LIB) banner $(NAME)
 
 $(NAME):  $(OBJS)
-	@$(CC) $^ $(LDFLAGS) -o $@
+	@$(CC) $^  $(LDFLAGS) $(XLIBS) -o $@ 
 	@printf "\n$(GREEN)✨ $(NAME) compiled successfully!$(CLR_RMV)\n"
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	@mkdir -p $(OBJDIR)
-	@$(CC) $(FLAGS) $(INCLUDE) -c $< -o $@
+	@$(CC)  -c $< -o $@
 	$(call progress_bar)
-
+	
 $(LIBFT_LIB):
-	@printf "$(BLUE)📚 Building libft...$(CLR_RMV)\n"
+	@printf "$(BLUE)📚 Building $(LIBFT)...$(CLR_RMV)\n"
 	@make -C $(LIBFT)
 	@printf "$(GREEN)✓ Libft ready!$(CLR_RMV)\n"
+
+$(MLIBX_LIB):
+	@printf "$(BLUE)📚 Building $(MLIBX)...$(CLR_RMV)\n"
+	@make -C $(MLIBX)
+	@printf "$(GREEN)✓ Minilibx ready!$(CLR_RMV)\n"
 
 banner:
 	@printf "%b" "$(PURPLE)"

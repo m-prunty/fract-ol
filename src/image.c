@@ -5,7 +5,8 @@ int linear_interpolation(double t, t_fractal *fractal)
 	int red;
 	int green;
 	int blue;
-
+	
+	(void)fractal;
 	if (t < 0)
 		t = 0;
 	if (t > 1)
@@ -148,8 +149,8 @@ void render_f(t_fractal *f)
 {
 
 	{
-		int x;
-		int y;
+	//	int x;
+	//	int y;
 		t_complex pixel;
 
 		(pixel.y) = -1.0;

@@ -1,9 +1,9 @@
 #ifndef FRACTOL_H
 # define FRACTOL_H
 
-#include "mlx.h"
 #include "math.h"
 #include "../libft/include/libft.h"
+#include "../minilibx-linux/mlx.h"
 #include <X11/X.h>
 #include <stdio.h>
 #include <stdlib.h>
