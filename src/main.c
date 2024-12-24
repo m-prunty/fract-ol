@@ -3,15 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: potz <marvin@42.fr>                        +#+  +:+       +#+        */
+/*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/23 20:22:08 by potz              #+#    #+#             */
-/*   Updated: 2024/12/23 20:32:56 by potz             ###   ########.fr       */
+/*   Created: 2024/12/23 22:08:07 by mprunty           #+#    #+#             */
+/*   Updated: 2024/12/24 14:14:46 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "../include/fractol.h"
-#include <stdio.h>
 
 /**
  * @brief function to handle errors
@@ -22,22 +20,21 @@
  */
 int	error_func(int i, char *info)
 {
-
-	if (i==0)
+	if (i == 0)
 		return (0);
 	ft_putendl_fd("Error", 2);
 	if (i == 1)
-		ft_printf("%s","incorrect input:");
+		ft_printf("%s", "incorrect input:");
 	else if (i == 2)
-		ft_printf("%s","malloc failed");
+		ft_printf("%s", "malloc failed");
 	else if (i == 3)
-		ft_printf("%s","mlx error:");
+		ft_printf("%s", "mlx error:");
 	else if (i == 4)
-		ft_printf("%s","mlx_display error");
+		ft_printf("%s", "mlx_display error");
 	else if (i == 5)
-		ft_printf("%s","");
+		ft_printf("%s", "");
 	else if (i == 6)
-		ft_printf("%s","turk sort failed");
+		ft_printf("%s", "turk sort failed");
 	ft_printf("%s", info);
 	return (0);
 }
@@ -53,8 +50,8 @@ int	create_trgb(int t, int r, int g, int b)
  */
 int draw_line(void *mlx,  int beginX, int beginY, int endX, int endY, int color)
 {
-	double deltaX = endX - beginX; // 10
-	double deltaY = endY - beginY; // 0
+	double deltaX = endX - beginX;
+	double deltaY = endY - beginY;
 	int pixels = ft_sqrtbs((deltaX * deltaX) + (deltaY * deltaY));
 
 	double pixelX = beginX;
@@ -66,8 +63,7 @@ int draw_line(void *mlx,  int beginX, int beginY, int endX, int endY, int color)
 		pixelY += deltaY / pixels;
 		--pixels;
 	}
-
-	return 0;
+	return (0);
 }
 
 /**
@@ -77,18 +73,17 @@ int draw_line(void *mlx,  int beginX, int beginY, int endX, int endY, int color)
  * @param n_error error number set to -1 if no error 
  * @param info further info on error, leave blank if none
  */
-void    clean_fractal(t_fractal *f, int n_error, char *info)
+void	clean_fractal(t_fractal *f, int n_error, char *info)
 {
-	if (n_error >= 0 )
-		error_func(n_error, info); 
+	if (n_error >= 0)
+		error_func(n_error, info);
 	if ((f->mlx_window))
 		mlx_destroy_window(f->mlx_connection, f->mlx_window);
 	if ((f->img.img))
 		mlx_destroy_display(f->mlx_connection);
 	free(f->mlx_connection);
-	return ; 
+	return ;
 }
-
 
 /**
  * @brief converts a string to float 
@@ -98,38 +93,30 @@ void    clean_fractal(t_fractal *f, int n_error, char *info)
  */
 double	ft_atof(const char *nptr)
 {
-	int	n;
+	int		neg;
+	int		decimal;
 	double	res;
-	int	neg;
-	int decimal;
 
 	res = 0;
 	neg = 1;
-	if (nptr){
-		n = ft_strlen(nptr)+ 1;
+	if (nptr)
+	{
 		decimal = 0;
-		while (ft_isblank(*nptr))
-			nptr ++;
-		if (nptr[0] == '-' || nptr[0] == '+')
-		{
-			if (nptr[0] == '-')
+		while (ft_isblank(*nptr) || (nptr[0] == '-' || nptr[0] == '+'))
+			if (*nptr++ == '-')
 				neg *= -1;
-			nptr++;
-			n--;
-		}
 		while (ft_isdigit(*nptr))
 		{
 			if (!decimal)
-				res = res *  10 + (*nptr - 48);
+				res = res * 10 + (*nptr - 48);
 			else
-				res += ft_pow(10,-decimal++) * (*nptr - 48);
-			if ( *++nptr == '.' && !decimal++)
-				++nptr;
+				res += ft_pow(10, -decimal++) * (*nptr - 48);
+			if (*++nptr == '.' && !decimal++)
+				nptr++;
 		}
 	}
 	return (res * neg);
 }
-
 
 /**
  * @brief function to check if a string value is a float
@@ -138,7 +125,7 @@ double	ft_atof(const char *nptr)
  * @param dec boolean switch to deal with a single decimal point 
  * @return 1 if isnum else 0
  */
-int ft_isnumf(char *str, int dec)
+int	ft_isnumf(char *str, int dec)
 {
 	if (*str == '\0')
 		return (1);
@@ -149,23 +136,21 @@ int ft_isnumf(char *str, int dec)
 	return (0);
 }
 
-
 int	main(int ac, char **av)
 {
-	t_fractal   f;
-	if (!(ac >=2) || ! ((*(av++)) && (**av == 'j' || **av == 'm')))
+	t_fractal	f;
+
+	if (!(ac >= 2) || ! ((*(av++)) && (**av == 'j' || **av == 'm')))
 		return (error_func(1, "enter either 'm' or 'j x y' "));
-	// set = **av;
 	f.name = *av++;
-	if ((*f.name == 'j') && (!ft_isnumf(*av, 1) || !ft_isnumf(*(av + 1), 1)) )
-		return (error_func(1, "'j' julia set must be seeded with initial values x y in the form 'j x y'"  ));
+	if ((*f.name == 'j') && (!ft_isnumf(*av, 1) || !ft_isnumf(*(av + 1), 1)))
+		return (error_func(1,
+				"julia set must be initialised with  x y in the form 'j x y'"));
 	init_values(&f, av);
 	init_f(&f);
-	printf("\n%f %f",f.c.x,f.c.y);
+//	printf("\n%f %f",f.c.x,f.c.y);
 	render_f(&f);
 	mlx_loop(f.mlx_connection);
-
-
 	clean_fractal(&f, -1, "");
 	/*
 	 * double i = 0;
@@ -181,6 +166,9 @@ int	main(int ac, char **av)
 	printf("\n%f",pow(10, -3));
 	printf("\n%f",pow(-5, -6));
 	printf("\n%f %f",f.c.x,f.c.y);
+	printf("\n%f %f",ft_atof("3.14"),ft_atof("-3.14"));
+	printf("\n%f %f",ft_atof("++ 0.14"),ft_atof("---3.14"));
+	printf("\n%f %f",ft_atof("++ 0.8712364876114"),ft_atof("---3.12987398114"));
 	//printf("%f",ft_sqrt(-3));
 	return (0);
 }
