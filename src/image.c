@@ -1,4 +1,4 @@
-#include "../include/fractol.h"
+#include "fractol.h"
 
 int linear_interpolation(double t, t_fractal *fractal)
 {
@@ -17,14 +17,6 @@ int linear_interpolation(double t, t_fractal *fractal)
 	return ((red << 16) | (green << 8) | blue);
 }
 
-/**
- * @brief Fonction pour déterminer la couleur d'un pixel à l'extérieur
- *	de l'ensemble de Mandelbrot.
- *
- * @param z Le point z après l'itération finale.
- * @param der La dérivée de z après l'itération finale.
- * @return int Couleur à appliquer au format 0x00RRGGBB.
- */
 int	normal_color(t_complex z, t_complex der, t_fractal *fractal)
 {
 	t_complex	u;
@@ -59,20 +51,12 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 {
 	int	dst;
 
-	//printf("%f", data);
 	dst = (y * data->line_length) + (x * (data->bits_per_pixel / 8));
 	*(unsigned *)(data->pxl_addr + dst) = color;
 	return;
 }
 
 
-/**
- * @brief y = y1 + ((x-x1) * (y2-y1) / (x2-x1))
- *
- * @param pixel 
- * @param f 
- * @return 
- */
 t_complex	map_complex(t_complex *pixel, t_fractal *f)
 {
 	t_complex	map_complex;
@@ -141,7 +125,7 @@ void	place_pixel(t_fractal *f, t_complex *pixel)
 			2 * z.x * zprime.y + 2 * z.y * zprime.x};
 		z = ft_complex_sum(ft_complex_sqrd(z), f->c); // z^2 +c
 	}
-	my_mlx_pixel_put(&f->img, pixel->x, pixel->y, LIME_SHOCK);
+	my_mlx_pixel_put(&f->img, pixel->x, pixel->y, normal_color(z, zprime, f));
 }
 
 void	render_f(t_fractal *f)
@@ -152,8 +136,8 @@ void	render_f(t_fractal *f)
 	(pixel.y) = -1.0;
 	while (++pixel.y < HEIGHT)
 	{
-		ft_putnbr_fd(pixel.y, 1);
-		ft_putchar_fd(' ', 1);
+		//ft_putnbr_fd(pixel.y, 1);
+		//ft_putchar_fd(' ', 1);
 		//ft_putchar_fd('', 1);
 		pixel.x = -1.0;
 		while (++pixel.x < WIDTH)
