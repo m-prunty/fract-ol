@@ -1,4 +1,3 @@
-
 #include "../include/fractol.h"
 
 double	ft_complex_abs(t_complex complex)
@@ -20,12 +19,6 @@ void	ft_complex_exp(double angle, t_complex *result)
 	result->y = magnitude * sin(angle);
 }
 
-/**
- * @brief Calcule le conjugué d'un nombre complexe.
- *
- * @param a Le nombre complexe.
- * @return t_complex Le conjugué du nombre complexe.
- */
 t_complex	ft_complex_conjugate(t_complex a)
 {
 	t_complex	result;
@@ -35,13 +28,6 @@ t_complex	ft_complex_conjugate(t_complex a)
 	return (result);
 }
 
-/**
- * @brief Divise deux nombres complexes.
- *
- * @param numerator Le numérateur (z).
- * @param denominator Le dénominateur (w).
- * @return t_complex Le résultat de la division.
- */
 t_complex	ft_complex_divide(t_complex numerator, t_complex denominator)
 {
 	t_complex	result;

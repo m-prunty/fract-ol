@@ -6,10 +6,10 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/23 22:08:07 by mprunty           #+#    #+#             */
-/*   Updated: 2024/12/24 14:28:04 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/12 05:24:23 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "../include/fractol.h"
+#include "fractol.h"
 
 /**
  * @brief function to handle errors
@@ -39,34 +39,6 @@ int	error_func(int i, char *info)
 	return (0);
 }
 
-int	create_trgb(int t, int r, int g, int b)
-{
-	return (t << 24 | r << 16 | g << 8 | b);
-}
-
-/*
- *  x^2 + y^2 +  2xyi
- *  |       \   \   \
- *    Real      imAGINERY
- */
-int draw_line(void *mlx,  int beginX, int beginY, int endX, int endY, int color)
-{
-	double deltaX = endX - beginX;
-	double deltaY = endY - beginY;
-	int pixels = ft_sqrtbs((deltaX * deltaX) + (deltaY * deltaY));
-
-	double pixelX = beginX;
-	double pixelY = beginY;
-	while (pixels)
-	{
-		my_mlx_pixel_put(mlx,  pixelX, pixelY, color);
-		pixelX += deltaX / pixels;
-		pixelY += deltaY / pixels;
-		--pixels;
-	}
-	return (0);
-}
-
 /**
  * @brief cleans up the fractal: destroys mlx, frees mem, and relays any error
  * 
@@ -78,11 +50,13 @@ void	clean_fractal(t_fractal *f, int n_error, char *info)
 {
 	if (n_error >= 0)
 		error_func(n_error, info);
-	if ((f->mlx_window))
-		mlx_destroy_window(f->mlx_connection, f->mlx_window);
+	if ((f->mlx_win))
+		mlx_destroy_window(f->mlx_con, f->mlx_win);
 	if ((f->img.img))
-		mlx_destroy_display(f->mlx_connection);
-	free(f->mlx_connection);
+		mlx_destroy_display(f->mlx_con);
+	if ((f->over.img))
+		mlx_destroy_display(f->mlx_con);
+	free(f->mlx_con);
 	return ;
 }
 
@@ -103,7 +77,7 @@ double	ft_atof(const char *nptr)
 	if (nptr)
 	{
 		decimal = 0;
-		while (ft_isblank(*nptr) || (nptr[0] == '-' || nptr[0] == '+'))
+		while (ft_isspace(*nptr) || (nptr[0] == '-' || nptr[0] == '+'))
 			if (*nptr++ == '-')
 				neg *= -1;
 		while (ft_isdigit(*nptr))
@@ -126,51 +100,48 @@ double	ft_atof(const char *nptr)
  * @param dec boolean switch to deal with a single decimal point 
  * @return 1 if isnum else 0
  */
-int	ft_isnumf(char *str, int dec)
+/*
+int	ft_isnumf(char *str, t_complex sym)
 {
+
 	if (*str == '\0')
 		return (1);
-	if (dec && *str == '.')
-		return (ft_isnumf(++str, 0) * 1);
+	if (sym.y && *str == '.')
+		return (ft_isnumf(++str, (t_complex){sym.x, 0}) * 1);
+	if (sym.x && *str == '-')
+		return (ft_isnumf(++str, (t_complex){0, sym.y}) * 1);
 	if (ft_isdigit(*str))
-		return (ft_isnumf(++str, dec) * 1);
+		return (ft_isnumf(++str, sym) * 1);
 	return (0);
+}*/
+
+int	check_args(int ac, char **av, t_fractal *f)
+{
+	if (!(ac >= 2) || ! ((*(av++)) && (**av == 'j' || **av == 'm')))
+		return (error_func(1, "enter either 'm' or 'j x y' "));
+	f->name = *av++;
+	if (!ft_isnumf(*av) ||!ft_isnumf(*(av + 1)))
+		return (error_func(1,
+				"julia set must be initialised with x y in the form 'j x y'"));
+	if (*(f->name) == 'j')
+		f->c = (t_complex){ft_atof(av[0]), ft_atof(av[1])};
+	else
+		f->c = (t_complex){0, 0};
+	return (1);
 }
 
 int	main(int ac, char **av)
 {
 	t_fractal	f;
 
-	if (!(ac >= 2) || ! ((*(av++)) && (**av == 'j' || **av == 'm')))
-		return (error_func(1, "enter either 'm' or 'j x y' "));
-	f.name = *av++;
-	if ((*f.name == 'j') && (!ft_isnumf(*av, 1) || !ft_isnumf(*(av + 1), 1)))
-		return (error_func(1,
-				"julia set must be initialised with  x y in the form 'j x y'"));
-	init_values(&f, av);
-	init_f(&f);
-//	printf("\n%f %f",f.c.x,f.c.y);
-	render_f(&f);
-	mlx_loop(f.mlx_connection);
-	clean_fractal(&f, -1, "");
-	/*
-	 * double i = 0;
-	 * while (i++ < 800)
-	 printf("\n%f", scale_linear(i, -2, 2));
-	 */
-	printf("\n%f",pow(3,2));
-	printf("\n%f",pow(7, 10));
-	printf("\n%f",pow(-5, 3));
-	printf("\n%f",ft_sqrtbs(7));
-	printf("\n%f",ft_sqrtbs(9));
-	printf("\n%f",ft_sqrtbs(2));
-	printf("\n%f",pow(10, -3));
-	printf("\n%f",pow(-5, -6));
-	printf("\n%f %f",f.c.x,f.c.y);
-	printf("\n%f %f",ft_atof("3.14"),ft_atof("-3.14"));
-	printf("\n%f %f",ft_atof("++ 0.14"),ft_atof("---3.14"));
-	printf("\n%f %f",ft_atof("++ 0.8712364876114"),ft_atof("---3.12987398114"));
-	//printf("%f",ft_sqrt(-3));
+	if (check_args(ac, av, &f))
+	{
+		init_values(&f);
+		init_f(&f);
+		render_f(&f);
+		mlx_loop(f.mlx_con);
+		clean_fractal(&f, -1, "fractal exited cleanly");
+	}
 	return (0);
 }
 

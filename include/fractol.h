@@ -1,15 +1,12 @@
-/* ************************************************************************** */
-/*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   fractol.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/23 21:50:51 by mprunty           #+#    #+#             */
-/*   Updated: 2024/12/23 22:05:04 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/11 20:57:20 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #ifndef FRACTOL_H
 # define FRACTOL_H
 
@@ -20,9 +17,9 @@
 # include "../libft/include/libft.h"
 # include "../minilibx-linux/mlx.h"
 
-# define HEIGHT 800 
-# define WIDTH 800 
-
+# define HEIGHT 1060 
+# define WIDTH 1060 
+# define CHUNKS 40
 /*
  * COLORS
  */
@@ -50,6 +47,9 @@
 # define KEY_DOWN 65364
 # define KEY_PLUS 61 
 # define KEY_MINUS 45 
+# define KEY_LT 46 
+# define KEY_GT 44 
+# define KEY_R 114 
 
 typedef struct s_data
 {
@@ -71,6 +71,15 @@ typedef struct s_complex
 	double	y;	// y
 }	t_complex;
 
+typedef struct s_mouse
+{
+	int	start_x;
+	int	start_y;
+	int	end_x;
+	int	end_y;
+	int	is_pressed;
+}	t_mouse;
+
 /**
  * @typedef s_fractal
  * @brief 
@@ -78,43 +87,47 @@ typedef struct s_complex
 typedef struct s_fractal
 {
 	char		*name;
-	void		*mlx_connection;
-	void		*mlx_window;
+	void		*mlx_con;
+	void		*mlx_win;
 	t_data		img;
+	t_data		over;
 	double		zoom;
 	t_complex	c;
 	t_complex	shift;
 	t_complex	minmax;
-	t_complex	screensize;
-	int			iterations;
-	int			escape;
-	//
+	t_complex	scrsize;
+	int			iters;
+	int			esc;
+	t_mouse		mouse;
 }	t_fractal;
 
+// ../src/main.c
 int			error_func(int i, char *info);
 int			create_trgb(int t, int r, int g, int b);
-int			draw_line(void *mlx,	int beginX, int beginY, int endX, int endY, int color);
 void		clean_fractal(t_fractal *f, int n_error, char *info);
 double		ft_atof(const char *nptr);
 
-// init
+// ../src/init.c
 void		init_cond(t_fractal *f, char **arg );
 void		init_f(t_fractal *f);
 void		init_events(t_fractal *f);
-void		init_values(t_fractal *f, char **av);
+void		init_values(t_fractal *f);
 
-// Image
+// ../src/image.c
 void		my_mlx_pixel_put(t_data *data, int x, int y, int color);
 void		place_pixel(t_fractal *f, t_complex *pixel);
 void		render_f(t_fractal *f);
 
-// maths
+// ../src/maths_utils.c
 double		ft_min(double x, double y);
 double		ft_max(double x, double y);
 double		ft_pow(double d, int pow);
 double		ft_sqrtbs(double n);
 double		scale_linear(double n, t_complex new_minmax, t_complex old_minmax);
-int			is_in_mandelbrot_set(double x, double y);
+int			is_mandelbulb(double x, double y);
+t_complex	map_complex(t_complex *pixel, t_fractal *f);
+
+// ../src/maths_complex.c
 double		ft_complex_abs(t_complex complex);
 double		ft_complex_dot(t_complex *a, t_complex *b);
 void		ft_complex_exp(double angle, t_complex *result);
@@ -123,10 +136,15 @@ t_complex	ft_complex_sum(t_complex z1, t_complex z2);
 t_complex	ft_complex_conjugate(t_complex a);
 t_complex	ft_complex_divide(t_complex numerator, t_complex denominator);
 
-// events
+// ../src/events.c
 int			close_handler(t_fractal *fractal);
 int			key_handler(int keysym, t_fractal *fractal);
 int			mouse_handler(int button, int x, int y, t_fractal *fractal);
 int			julia_track(int x, int y, t_fractal *fractal);
 
+// ../src/mouse.c
+void		draw_selection_rectangle(t_fractal *f);
+int			mouse_press(int button, int x, int y, t_fractal *f);
+int			mouse_motion(int x, int y, t_fractal *f);
+int			mouse_release(int button, int x, int y, t_fractal *f);
 #endif

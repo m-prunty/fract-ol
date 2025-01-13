@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/23 21:43:57 by mprunty           #+#    #+#             */
-/*   Updated: 2024/12/23 21:50:02 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/12 02:07:22 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
  */
 int	close_handler(t_fractal *f)
 {
-	mlx_destroy_image(f->mlx_connection, f->img.img);
+	mlx_destroy_image(f->mlx_con, f->img.img);
 	clean_fractal(f, -1, "");
 	exit(EXIT_SUCCESS);
 }
@@ -48,10 +48,40 @@ void	move(t_fractal *f, int axis, double delta)
  */
 void	inc_iters(t_fractal *f, double delta)
 {
-	f->iterations += delta;
+	f->iters += delta;
 	render_f(f);
 }
 
+/**
+ * @brief function move the screen
+ *
+ * @param f fractal object
+ * @param axis axis i.e 'x' or 'y'
+ * @param delta amount to move by
+ */
+void	zoom(t_fractal *f, int dir)
+{
+	if (dir > 0)
+	{
+		f->zoom *= 1.05;
+		//inc_iters(f, 10);
+	}
+	else if (dir < 0)
+	{
+		f->zoom *= 0.95;
+		//inc_iters(f, -10);
+	}
+	render_f(f);
+}
+
+void	reset(t_fractal *f)
+{
+	f->zoom = 1.0;
+	f->iters = 50;
+	f->esc = 4;
+	f->shift = (t_complex){0, 0};
+	render_f(f);
+}
 /**
  * @brief handles key inputs
  *
@@ -61,13 +91,13 @@ void	inc_iters(t_fractal *f, double delta)
  */
 int	key_handler(int keysym, t_fractal *f)
 {
-	ft_printf("\t%i\t", keysym);
+	printf("%i ", keysym);
 	if (keysym == KEY_ESC)
 		close_handler(f);
 	if (keysym == KEY_LEFT)
-		move(f, 'x', 0.5);
-	else if (keysym == KEY_RIGHT)
 		move(f, 'x', -0.5);
+	else if (keysym == KEY_RIGHT)
+		move(f, 'x', 0.5);
 	else if (keysym == KEY_UP)
 		move(f, 'y', -0.5);
 	else if (keysym == KEY_DOWN)
@@ -76,29 +106,15 @@ int	key_handler(int keysym, t_fractal *f)
 		inc_iters(f, 10);
 	else if (keysym == KEY_MINUS)
 		inc_iters(f, -10);
+	else if (keysym == KEY_LT)
+		zoom(f, -1);
+	else if (keysym == KEY_GT)
+		zoom(f, 1);
+	else if (keysym == KEY_R)
+		reset(f);
 	return (0);
 }
 
-/**
- * @brief function to handle mouse inputs 
- *
- * @param button 
- * @param x 
- * @param y 
- * @param f 
- * @return 
- */
-int	mouse_handler(int button, int x, int y, t_fractal *f)
-{
-	if (button == Button5)
-		f->zoom *= 0.95;
-	else if (button == Button4)
-		f->zoom *= 1.05;
-	render_f(f);
-	(void)x;
-	(void)y;
-	return (0);
-}
 
 /*
  * TRACK the mouse

@@ -1,6 +1,32 @@
+/* ************************************************************************** */
+/*																			*/
+/*														:::	  ::::::::   */
+/*   image.c                                            :+:      :+:    :+:   */
+/*													+:+ +:+		 +:+	 */
+/*   By: mprunty <mprunty@student.42london.com>	 +#+  +:+	   +#+		*/
+/*												+#+#+#+#+#+   +#+		   */
+/*   Created: 2025/01/09 11:37:23 by mprunty		   #+#	#+#			 */
+/*   Updated: 2025/01/12 02:20:21 by mprunty          ###   ########.fr       */
+/*																			*/
+/* ************************************************************************** */
 #include "fractol.h"
 
 int linear_interpolation(double t, t_fractal *fractal)
+{
+    int r, g, b;
+
+	(void)fractal;
+    
+    // Cycle through colors based on iteration count
+    t = t * 6.28318; // 2 * PI
+    
+    r = (sin(t) + 1) * 127;
+    g = (sin(t + 2.0944) + 1) * 127; // 2*PI/3
+    b = (sin(t + 4.18879) + 1) * 127; // 4*PI/3
+    
+    return (r << 16) | (g << 8) | b;
+}/*
+int	linear_interpolation(double t, t_fractal *fractal)
 {
 	int	red;
 	int	green;
@@ -16,7 +42,7 @@ int linear_interpolation(double t, t_fractal *fractal)
 	blue = (WHITE & 0xFF) * t;
 	return ((red << 16) | (green << 8) | blue);
 }
-
+*/
 int	normal_color(t_complex z, t_complex der, t_fractal *fractal)
 {
 	t_complex	u;
@@ -29,12 +55,12 @@ int	normal_color(t_complex z, t_complex der, t_fractal *fractal)
 	u = ft_complex_divide(z, der);
 	u.x /= ft_complex_abs(u);
 	u.y /= ft_complex_abs(u);
-	t = ft_complex_dot(&u, &v) + 2; // + fractal->color_h;
-	t = t / (1 + 2);                // fractal->color_h);
+	t = ft_complex_dot(&u, &v) + 2;
+	t = t / (1 + 2);
 	return (linear_interpolation(t, fractal));
 }
 
-int	is_in_mandelbrot_set(double x, double y)
+int	is_mandelbulb(double x, double y)
 {
 	double	p;
 	double	q;
@@ -53,39 +79,24 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 
 	dst = (y * data->line_length) + (x * (data->bits_per_pixel / 8));
 	*(unsigned *)(data->pxl_addr + dst) = color;
-	return;
+	return ;
 }
-
 
 t_complex	map_complex(t_complex *pixel, t_fractal *f)
 {
-	t_complex	map_complex;
-	/*
-	   map_complex.x = ((scale_linear(pixel.x, f.minmax, f.screensize) * f.zoom)
-	   + f.shift.x) ; map_complex.y = ((scale_linear(pixel.y, f.minmax,
-	   f.screensize) * f.zoom) + f.shift.y) ; map_complex.x = scale_linear(double
-	   n, t_complex new_minmax, t_complex old_minmax)
-	   */
-	/*
-	*/
-	map_complex.x = scale_linear(pixel->x, f->minmax, f->screensize) 
+	t_complex	map;
+	map.x = (pixel->x / WIDTH * f->minmax.x + f->minmax.y) 
+					* f->zoom + f->shift.x;
+	map.y = (pixel->y / HEIGHT * 2.0 + 1.0)
+					* f->zoom + f->shift.y;
+/*	map.x = scale_linear(pixel->x, f->minmax, f->screensize) 
 		* f->zoom
 		+ f->shift.x;
-	map_complex.y = scale_linear(pixel->y, f->minmax, f->screensize)
+	map.y = scale_linear(pixel->y, f->minmax, f->screensize)
 		* f->zoom
 		+ f->shift.y;
-	/*map_complex.x = f->minmax.y +
-		(pixel->x / WIDTH * (f->minmax.x - f->minmax.y) *
-	//(((pixel->x * f->minmax.x - f->minmax.y) / WIDTH + f->minmax.y) *
-		 f->zoom +
-		 f->shift.x);
-	map_complex.y =
-		(pixel->y / HEIGHT * (f->minmax.x - f->minmax.y) *
-		//(((pixel->y * f->minmax.x - f->minmax.y) / HEIGHT + f->minmax.y) *
-		f->zoom +
-		f->shift.y);
-*/
-	return (map_complex);
+	*/
+	return (map);
 }
 
 void	init_constant(t_fractal *f, t_complex *c, t_complex *z)
@@ -101,53 +112,105 @@ void	place_pixel(t_fractal *f, t_complex *pixel)
 {
 	t_complex	z;
 	t_complex	zprime;
+	t_complex	c;
 	int			i;
-//	t_complex	c;
-	//  z.x = ((scale_linear(pixel.x, f.minmax, f.screensize) * f.zoom) +
-	//  f.shift.x) ; z.y = ((scale_linear(pixel.y, f.minmax, f.screensize) *
-	//  f.zoom) + f.shift.y) ;
-	zprime = (t_complex){1.0, 0.0};
-	z = map_complex(pixel, f);
-	f->c = z; //(t_complex){};
-	i = -1;
-	if (is_in_mandelbrot_set(z.x, z.y))  //&& *f.name =='m'
+	int			col;
+
+	if (*f->name == 'm' )
 	{
-		//	printf("\nz: %f %f,  c: %f %f,  pix: %f %f", z.y, z.x, c.y, c.x, pixel->x, pixel->y);
-		return (my_mlx_pixel_put(&f->img, pixel->x, pixel->y, BLACK));
+		z = (t_complex){0.0, 0.0};
+		c = map_complex(pixel, f);
 	}
-	while (i++ < f->iterations)
+	else
 	{
-		if (pow(z.y, 2) + pow(z.x, 2) > f->escape)
+		z = map_complex(pixel, f);
+		c = f->c;
+	}
+	i = 0;
+	while (i++ < f->iters)
+	{
+		if ((z.x * z.x + z.y * z.y) > f->esc)
 		{
-			return	my_mlx_pixel_put(&f->img, pixel->x, pixel->y, normal_color(z, zprime, f));
+			// Smooth coloring based on escape iteration
+			//double smooth = i + 1 - log(log(z.x * z.x + z.y * z.y)) / log(2);
+			col = linear_interpolation(i,f);//smooth / f->iterations, f);
+			return my_mlx_pixel_put(&f->img, pixel->x, pixel->y, col);
 		}
-		zprime = (t_complex){2 * z.x * zprime.x - 2 * z.y * zprime.y,
-			2 * z.x * zprime.y + 2 * z.y * zprime.x};
-		z = ft_complex_sum(ft_complex_sqrd(z), f->c); // z^2 +c
+		zprime.x = z.x * z.x - z.y * z.y + c.x;
+		zprime.y = 2 * z.x * z.y + c.y;
+		z = zprime;
+		i++;
 	}
-	my_mlx_pixel_put(&f->img, pixel->x, pixel->y, normal_color(z, zprime, f));
+	// Point did not escape - in the set
+	my_mlx_pixel_put(&f->img, pixel->x, pixel->y, BLACK);
 }
 
-void	render_f(t_fractal *f)
+
+void	render_chunk(t_fractal *f, int chunk_x, int chunk_y)
 {
 	t_complex	pixel;
-	//	int x;
-	//	int y;
-	(pixel.y) = -1.0;
-	while (++pixel.y < HEIGHT)
+
+	pixel.y = chunk_y;
+	while (pixel.y < fmin(chunk_y + CHUNKS, HEIGHT) )
 	{
-		//ft_putnbr_fd(pixel.y, 1);
-		//ft_putchar_fd(' ', 1);
-		//ft_putchar_fd('', 1);
-		pixel.x = -1.0;
-		while (++pixel.x < WIDTH)
+		pixel.x = chunk_x;
+		while (pixel.x < fmin(chunk_x + CHUNKS, WIDTH))
 		{
-			//ft_putnbr_fd(pixel.x, 1);
+			pixel.x++;
 			place_pixel(f, &pixel);
 		}
+		pixel.y++;
 	}
-	mlx_put_image_to_window(f->mlx_connection, f->mlx_window, f->img.img, 0, 0);
-	mlx_string_put(f->mlx_connection, f->mlx_window, 20, 30, 0XFFFFFF - WHITE,
-		"Help: h");
+}
+
+/**
+ * @brief 
+ *
+ * @param f 
+ */
+void	render_f(t_fractal *f)
+{
+	int 		x;
+	int 		y;
+
+	y = 0;
+	while (y < HEIGHT)
+	{
+		x = 0;
+		while (x < WIDTH)
+		{
+			render_chunk(f, x, y);
+			x += CHUNKS;
+		}
+		y += CHUNKS;	
+	}
+
+	mlx_put_image_to_window(f->mlx_con, f->mlx_win, 
+			f->img.img, WIDTH/2, HEIGHT/2);
 	return ;
 }
+/*
+void	render_overlay(t_fractal *f)
+{
+	mlx_put_image_to_window(f->mlx_connection, f->mlx_win, 
+			f->img.overlay, WIDTH/2, HEIGHT/2);
+	y = 0;
+	while (y < HEIGHT)
+	{
+		x = 0;
+		while (x < WIDTH)
+		{
+			render_chunk(f, x, y);
+			x += CHUNKS;
+		}
+		y += CHUNKS;	
+	}
+
+	mlx_put_image_to_window(f->mlx_connection, f->mlx_win, f->img.img, 0, 0);
+	return ;
+}
+	mlx_string_put(f->mlx_connection, f->mlx_win, 20, 30, 0XFFFFFF - WHITE,
+			"Help: h");i
+
+
+			*/
