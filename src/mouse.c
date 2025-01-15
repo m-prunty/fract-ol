@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 20:42:18 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/15 04:26:05 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/15 04:38:02 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -33,9 +33,9 @@ void	draw_box(t_fractal *f)
 			x++;
 		}
 		y++;
-		render_overlay(f);
+	//	render_overlay(f);
 	}
-	mlx_put_image_to_window(f->mlx_con, f->mlx_win, f->overlay.img, 0, 0);
+	mlx_put_image_to_window(f->mlx_con, f->mlx_win, f->img.img, 0, 0);
 }
 
 int	mouse_press(int button, int x, int y, t_fractal *f)
@@ -87,7 +87,7 @@ int	mouse_release(int button, int x, int y, t_fractal *f)
 				{f->mouse.end.x,
 					f->mouse.end.y}), f);
 		ratio = fabs(end_pos.x - start_pos.x);
-		f->zoom = f->zoom / fmax();
+		f->zoom = f->zoom / ratio;
 		f->shift.x = (start_pos.x + end_pos.x) / 2;
 		f->shift.y = (start_pos.y + end_pos.y) / 2;
 		render_f(f);

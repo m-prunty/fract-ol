@@ -67,8 +67,6 @@ void	init_values(t_fractal *f)
 	f->shift = (t_complex){0.5, 1.25};
 	f->scrsize = (t_complex){WIDTH, HEIGHT};
 	f->mouse.is_pressed = 0;
-	f->mouse.start.x = 0;
-	f->mouse.start.y = 0;
-	f->mouse.end.x = 0;
-	f->mouse.end.y = 0;
+	f->mouse.start = (t_complex){0, 0};
+	f->mouse.end = (t_complex){0, 0};
 }
