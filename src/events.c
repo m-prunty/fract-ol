@@ -6,12 +6,11 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/23 21:43:57 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/12 02:07:22 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/15 04:09:13 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "../include/fractol.h"
-#include "X11/X.h"
+
 /**
  * @brief closes out the session, destroy all mlx connections and free mem
  *
@@ -19,8 +18,7 @@
  */
 int	close_handler(t_fractal *f)
 {
-	mlx_destroy_image(f->mlx_con, f->img.img);
-	clean_fractal(f, -1, "");
+	clean_fractal(f, -1, "fractal exited cleanly");
 	exit(EXIT_SUCCESS);
 }
 
@@ -38,6 +36,7 @@ void	move(t_fractal *f, int axis, double delta)
 	else if (axis == 'y')
 		f->shift.y += (delta * f->zoom);
 	render_f(f);
+	render_overlay(f);
 }
 
 /**
@@ -50,6 +49,7 @@ void	inc_iters(t_fractal *f, double delta)
 {
 	f->iters += delta;
 	render_f(f);
+	render_overlay(f);
 }
 
 /**
@@ -72,6 +72,7 @@ void	zoom(t_fractal *f, int dir)
 		//inc_iters(f, -10);
 	}
 	render_f(f);
+	render_overlay(f);
 }
 
 void	reset(t_fractal *f)
@@ -81,6 +82,7 @@ void	reset(t_fractal *f)
 	f->esc = 4;
 	f->shift = (t_complex){0, 0};
 	render_f(f);
+	render_overlay(f);
 }
 /**
  * @brief handles key inputs
@@ -111,7 +113,13 @@ int	key_handler(int keysym, t_fractal *f)
 	else if (keysym == KEY_GT)
 		zoom(f, 1);
 	else if (keysym == KEY_R)
-		reset(f);
+		init_values(f);
+	else if (keysym == KEY_H)
+	{
+		f->show_help = !f->show_help;
+		render_f(f);
+        render_overlay(f);
+    }
 	return (0);
 }
 

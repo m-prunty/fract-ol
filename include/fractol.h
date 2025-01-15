@@ -1,10 +1,12 @@
+/* ************************************************************************** */
+/*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   fractol.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/23 21:50:51 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/11 20:57:20 by mprunty          ###   ########.fr       */
+/*   Created: 2025/01/13 12:38:26 by mprunty           #+#    #+#             */
+/*   Updated: 2025/01/15 03:07:29 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FRACTOL_H
@@ -20,6 +22,8 @@
 # define HEIGHT 1060 
 # define WIDTH 1060 
 # define CHUNKS 40
+# define FT_PI_3 1.04719755119659774615
+
 /*
  * COLORS
  */
@@ -31,10 +35,10 @@
 
 // Psychedelic colors
 # define MAGENTA_BURST	0xFF00FF	// A vibrant magenta
-# define LIME_SHOCK	0xCCFF00	// A blinding lime
+# define LIME_SHOCK		0xCCFF00	// A blinding lime
 # define NEON_ORANGE	0xFF6600	// A blazing neon orange
 # define PSYCHEDELIC_PURPLE 0x660066	// A deep purple
-# define AQUA_DREAM	0x33CCCC	// A bright turquoise
+# define AQUA_DREAM		0x33CCCC	// A bright turquoise
 # define HOT_PINK		0xFF66B2	// As the name suggests!
 # define ELECTRIC_BLUE	0x0066FF	// A radiant blue
 # define LAVA_RED		0xFF3300	// A bright, molten red
@@ -50,6 +54,20 @@
 # define KEY_LT 46 
 # define KEY_GT 44 
 # define KEY_R 114 
+# define KEY_H 104 
+
+//Error Messages
+# define ERR_NONE "no errors detected"
+# define ERR_MALLOC "malloc failed"
+# define ERR_INPUT "incorrect input;"
+# define ERR_INPUT_VAL "input must b either 'm', 'j x y', or 'b x y'"
+# define ERR_INPUT_XY "must be initialised with x y in the form 'j x y'"
+# define ERR_MLX "mlx error; "
+# define ERR_MLX_INIT "Could not establish mlx_connection"
+# define ERR_MLX_WIN "Could not establish mlx_new_window"
+# define ERR_MLX_IMG "Could not establish mlx_new_image"
+# define ERR_MLX_OVERLAY "Could not create overlay image"
+# define ERR_MLX_DISPLAY "mlx_display error"
 
 typedef struct s_data
 {
@@ -58,6 +76,7 @@ typedef struct s_data
 	int		bits_per_pixel;
 	int		line_length;
 	int		endian;
+	int		is_visible;
 }				t_data;
 
 /**
@@ -67,17 +86,19 @@ typedef struct s_data
  */
 typedef struct s_complex
 {
-	double	x;	// x
-	double	y;	// y
+	double	x;
+	double	y;
 }	t_complex;
 
+/**
+ * @typedef s_mouse
+ * @brief for storing mouse data
+ */
 typedef struct s_mouse
 {
-	int	start_x;
-	int	start_y;
-	int	end_x;
-	int	end_y;
-	int	is_pressed;
+	t_complex	start;
+	t_complex	end;
+	int			is_pressed;
 }	t_mouse;
 
 /**
@@ -90,7 +111,7 @@ typedef struct s_fractal
 	void		*mlx_con;
 	void		*mlx_win;
 	t_data		img;
-	t_data		over;
+	t_data		overlay;
 	double		zoom;
 	t_complex	c;
 	t_complex	shift;
@@ -99,6 +120,7 @@ typedef struct s_fractal
 	int			iters;
 	int			esc;
 	t_mouse		mouse;
+	int			show_help;
 }	t_fractal;
 
 // ../src/main.c
@@ -143,8 +165,11 @@ int			mouse_handler(int button, int x, int y, t_fractal *fractal);
 int			julia_track(int x, int y, t_fractal *fractal);
 
 // ../src/mouse.c
-void		draw_selection_rectangle(t_fractal *f);
+void		draw_box(t_fractal *f);
 int			mouse_press(int button, int x, int y, t_fractal *f);
 int			mouse_motion(int x, int y, t_fractal *f);
 int			mouse_release(int button, int x, int y, t_fractal *f);
+
+void		render_overlay(t_fractal *f);
+void		init_overlay(t_fractal *f);
 #endif

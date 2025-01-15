@@ -6,43 +6,25 @@
 /*   By: mprunty <mprunty@student.42london.com>	 +#+  +:+	   +#+		*/
 /*												+#+#+#+#+#+   +#+		   */
 /*   Created: 2025/01/09 11:37:23 by mprunty		   #+#	#+#			 */
-/*   Updated: 2025/01/12 02:20:21 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/15 04:26:14 by mprunty          ###   ########.fr       */
 /*																			*/
 /* ************************************************************************** */
 #include "fractol.h"
 
-int linear_interpolation(double t, t_fractal *fractal)
-{
-    int r, g, b;
-
-	(void)fractal;
-    
-    // Cycle through colors based on iteration count
-    t = t * 6.28318; // 2 * PI
-    
-    r = (sin(t) + 1) * 127;
-    g = (sin(t + 2.0944) + 1) * 127; // 2*PI/3
-    b = (sin(t + 4.18879) + 1) * 127; // 4*PI/3
-    
-    return (r << 16) | (g << 8) | b;
-}/*
 int	linear_interpolation(double t, t_fractal *fractal)
 {
-	int	red;
-	int	green;
-	int	blue;
+	int	r;
+	int	g;
+	int	b;
 
 	(void)fractal;
-	if (t < 0)
-		t = 0;
-	if (t > 1)
-		t = 1;
-	red = ((WHITE >> 16) & 0xFF) * t;
-	green = ((WHITE >> 8) & 0xFF) * t;
-	blue = (WHITE & 0xFF) * t;
-	return ((red << 16) | (green << 8) | blue);
+	t = t * 2 * M_PI;
+	r = (sin(t) + 1) * 127;
+	g = (sin(t + 2 * FT_PI_3) + 1) * 127;
+	b = (sin(t + 4 * FT_PI_3) + 1) * 127;
+	return ((r << 16) | (g << 8) | b);
 }
-*/
+
 int	normal_color(t_complex z, t_complex der, t_fractal *fractal)
 {
 	t_complex	u;
@@ -85,27 +67,12 @@ void	my_mlx_pixel_put(t_data *data, int x, int y, int color)
 t_complex	map_complex(t_complex *pixel, t_fractal *f)
 {
 	t_complex	map;
-	map.x = (pixel->x / WIDTH * f->minmax.x + f->minmax.y) 
-					* f->zoom + f->shift.x;
-	map.y = (pixel->y / HEIGHT * 2.0 + 1.0)
-					* f->zoom + f->shift.y;
-/*	map.x = scale_linear(pixel->x, f->minmax, f->screensize) 
-		* f->zoom
-		+ f->shift.x;
-	map.y = scale_linear(pixel->y, f->minmax, f->screensize)
-		* f->zoom
-		+ f->shift.y;
-	*/
-	return (map);
-}
 
-void	init_constant(t_fractal *f, t_complex *c, t_complex *z)
-{
-	if (*f->name != 'j')
-	{
-		c->x = z->x;
-		c->y = z->y;
-	}
+	map.x = (pixel->x / WIDTH * f->minmax.x + f->minmax.y) 
+		* f->zoom + f->shift.x;
+	map.y = (pixel->y / HEIGHT * f->minmax.x + f->minmax.y)
+		* f->zoom + f->shift.y;
+	return (map);
 }
 
 void	place_pixel(t_fractal *f, t_complex *pixel)
@@ -114,7 +81,7 @@ void	place_pixel(t_fractal *f, t_complex *pixel)
 	t_complex	zprime;
 	t_complex	c;
 	int			i;
-	int			col;
+	//int			col;
 
 	if (*f->name == 'm' )
 	{
@@ -131,10 +98,10 @@ void	place_pixel(t_fractal *f, t_complex *pixel)
 	{
 		if ((z.x * z.x + z.y * z.y) > f->esc)
 		{
-			// Smooth coloring based on escape iteration
 			//double smooth = i + 1 - log(log(z.x * z.x + z.y * z.y)) / log(2);
-			col = linear_interpolation(i,f);//smooth / f->iterations, f);
-			return my_mlx_pixel_put(&f->img, pixel->x, pixel->y, col);
+			//col = linear_interpolation(smooth / f->iters, f);
+			return my_mlx_pixel_put(&f->img, pixel->x, pixel->y,
+					normal_color(z, zprime, f));
 		}
 		zprime.x = z.x * z.x - z.y * z.y + c.x;
 		zprime.y = 2 * z.x * z.y + c.y;
@@ -144,7 +111,6 @@ void	place_pixel(t_fractal *f, t_complex *pixel)
 	// Point did not escape - in the set
 	my_mlx_pixel_put(&f->img, pixel->x, pixel->y, BLACK);
 }
-
 
 void	render_chunk(t_fractal *f, int chunk_x, int chunk_y)
 {
@@ -170,8 +136,8 @@ void	render_chunk(t_fractal *f, int chunk_x, int chunk_y)
  */
 void	render_f(t_fractal *f)
 {
-	int 		x;
-	int 		y;
+	int	x;
+	int	y;
 
 	y = 0;
 	while (y < HEIGHT)
@@ -184,33 +150,63 @@ void	render_f(t_fractal *f)
 		}
 		y += CHUNKS;	
 	}
-
 	mlx_put_image_to_window(f->mlx_con, f->mlx_win, 
-			f->img.img, WIDTH/2, HEIGHT/2);
+			f->img.img, 0, 0);
 	return ;
 }
-/*
+
+void	clear_overlay(t_fractal *f)
+{
+	int	x;
+	int	y;
+
+	y = 0;
+	while (y < HEIGHT)
+	{
+		x = 0;
+		while (x < WIDTH)
+		{
+			my_mlx_pixel_put(&f->overlay, x, y, 0x00000000);
+			x++;
+		}
+		y++;
+	}
+}
+
+	/*
+char	**get_strs(t_fractal f)
+{
+	char	*strs[8];
+
+
+	 strs = malloc(sizeof(char *) * 8);
+	// *strs = "";
+	//ft_putstr_fd(*strs, 1);
+	(void)f;
+	strs[0] = "Fractal: %s", f->name;
+	strs[1] = "Zoom: %.2e", f->zoom;
+	strs[2] = "Shift: (%.3f, %.3f)", f->shift.x, f->shift.y;
+	strs[3] = "Iterations: %d", f->iters;
+	strs[4] = "Escape value: %.1f", f->esc;
+	strs[5] = "C value: (%.3f, %.3f)", f->c.x, f->c.y;
+	strs[6] = "Window: %dx%d", WIDTH, HEIGHT;
+	strs[7] = "Press H for help";
+	return (strs);
+}
+	*/
 void	render_overlay(t_fractal *f)
 {
-	mlx_put_image_to_window(f->mlx_connection, f->mlx_win, 
-			f->img.overlay, WIDTH/2, HEIGHT/2);
-	y = 0;
-	while (y < HEIGHT)
-	{
-		x = 0;
-		while (x < WIDTH)
-		{
-			render_chunk(f, x, y);
-			x += CHUNKS;
-		}
-		y += CHUNKS;	
-	}
+	char str[100];
 
-	mlx_put_image_to_window(f->mlx_connection, f->mlx_win, f->img.img, 0, 0);
+	clear_overlay(f);
+    snprintf(str, sizeof(str), "Fractal: %s", f->name);
+    mlx_string_put(f->mlx_con, f->mlx_win, WIDTH - 200, 20, WHITE, str);
+
+	mlx_string_put(f->mlx_con, f->mlx_win, 20, 30, 0XFFFFFF - WHITE,
+			"Help: h" );
+	if (f->mouse.is_pressed)
+		draw_box(f);
+	//mlx_put_image_to_window(f->mlx_con, f->mlx_win, 
+	//		f->overlay.img, 0, 0);
 	return ;
 }
-	mlx_string_put(f->mlx_connection, f->mlx_win, 20, 30, 0XFFFFFF - WHITE,
-			"Help: h");i
-
-
-			*/

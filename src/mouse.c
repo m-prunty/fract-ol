@@ -1,88 +1,97 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   mouse.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/13 20:42:18 by mprunty           #+#    #+#             */
+/*   Updated: 2025/01/15 04:26:05 by mprunty          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 #include "fractol.h"
 
-void draw_selection_rectangle(t_fractal *f)
+void	draw_box(t_fractal *f)
 {
-	int x;
-	int	y;
-	int min_x = fmin(f->mouse.start_x, f->mouse.end_x);
-	int max_x = fmax(f->mouse.start_x, f->mouse.end_x);
-	int min_y = fmin(f->mouse.start_y, f->mouse.end_y);
-	int max_y = fmax(f->mouse.start_y, f->mouse.end_y);
+	t_mouse	box;
+	int		x;
+	int		y;
 
-	// Draw horizontal lines
-	y = min_y;
-	while (y <= max_y)
+	box.start.x = fmin(f->mouse.start.x, f->mouse.end.x);
+	box.start.y = fmin(f->mouse.start.y, f->mouse.end.y);
+	box.end.x = fmax(f->mouse.start.x, f->mouse.end.x);
+	box.end.y = fmax(f->mouse.start.y, f->mouse.end.y);
+	y = box.start.y;
+	while (y <= box.end.y)
 	{
-		x = min_x;
-		while (x <= max_x)
+		x = box.start.x;
+		while (x <= box.end.x)
 		{
-			if (y == min_y || y == max_y || x == min_x || x == max_x)
-				my_mlx_pixel_put(&f->img, x, y, 0xFFFFFF);
+			if (y == box.start.y || y == box.end.y
+				|| x == box.start.x || x == box.end.x)
+				my_mlx_pixel_put(&f->overlay, x, y, 0xFFFFFF);
 			x++;
 		}
 		y++;
-	}	
-	mlx_put_image_to_window(f->mlx_con, f->mlx_win, f->img.img, 0, 0);
+		render_overlay(f);
+	}
+	mlx_put_image_to_window(f->mlx_con, f->mlx_win, f->overlay.img, 0, 0);
 }
 
-// Mouse button press handler
-int mouse_press(int button, int x, int y, t_fractal *f)
+int	mouse_press(int button, int x, int y, t_fractal *f)
 {
-	if (button == Button1) // Left click
+	if (button == Button1)
 	{
 		f->mouse.is_pressed = 1;
-		f->mouse.start_x = x;
-		f->mouse.start_y = y;
-		f->mouse.end_x = x;
-		f->mouse.end_y = y;
+		f->mouse.start.x = x;
+		f->mouse.start.y = y;
+		f->mouse.end.x = x;
+		f->mouse.end.y = y;
 	}
-	else if (button == Button4) // Scroll up
+	else if (button == Button4)
 		f->zoom *= 1.05;
-	else if (button == Button5) // Scroll down
+	else if (button == Button5)
 		f->zoom *= 0.95;
 	if (button == Button4 || button == Button5)
 		render_f(f);
 	return (0);
 }
 
-// Mouse motion handler
-int mouse_motion(int x, int y, t_fractal *f)
+int	mouse_motion(int x, int y, t_fractal *f)
 {
 	if (f->mouse.is_pressed)
 	{
-		f->mouse.end_x = x;
-		f->mouse.end_y = y;
-		// Redraw the fractal and selection rectangle
-		//render_f(f);
-		draw_selection_rectangle(f);
+		f->mouse.end.x = x;
+		f->mouse.end.y = y;
+		render_f(f);
+		draw_box(f);
 	}
 	return (0);
 }
 
-// Mouse button release handler
-int mouse_release(int button, int x, int y, t_fractal *f)
+int	mouse_release(int button, int x, int y, t_fractal *f)
 {
+	t_complex	start_pos;
+	t_complex	end_pos;
+	double		ratio;
+
 	if (button == Button1)
 	{
-		t_complex start_pos, end_pos;
-		double width_ratio;//, height_ratio;
 		f->mouse.is_pressed = 0;
-		f->mouse.end_x = x;
-		f->mouse.end_y = y;
-		// Convert selection coordinates to complex plane coordinates
-		t_complex pixel_start = {f->mouse.start_x, f->mouse.start_y};
-		t_complex pixel_end = {f->mouse.end_x, f->mouse.end_y};
-		start_pos = map_complex(&pixel_start, f);
-		end_pos = map_complex(&pixel_end, f);
-		// Calculate new zoom and position
-		width_ratio = fabs(end_pos.x - start_pos.x);
-		//height_ratio = fabs(end_pos.y - start_pos.y);
-		// Update the fractal view
-		f->zoom *= 3.5 / width_ratio;
-		f->shift.x = -(start_pos.x + end_pos.x) / 2;
-		f->shift.y = -(start_pos.y + end_pos.y) / 2;
-//		render_f(f);
+		f->mouse.end.x = x;
+		f->mouse.end.y = y;
+		start_pos = map_complex(&((t_complex)
+				{f->mouse.start.x,
+					f->mouse.start.y}), f);
+		end_pos = map_complex(&((t_complex)
+				{f->mouse.end.x,
+					f->mouse.end.y}), f);
+		ratio = fabs(end_pos.x - start_pos.x);
+		f->zoom = f->zoom / fmax();
+		f->shift.x = (start_pos.x + end_pos.x) / 2;
+		f->shift.y = (start_pos.y + end_pos.y) / 2;
+		render_f(f);
+		render_overlay(f);
 	}
 	return (0);
 }
-
