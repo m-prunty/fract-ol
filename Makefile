@@ -9,7 +9,7 @@ MLIBX_LIB	:= $(MLIBX)/libmlx.a
 
 LDFLAGS 	:= -L$(LIBFT) -lft -L$(MLIBX) -lmlx
 INCLUDE		:= -I$(LIBFT)/include -Iinclude -I$(MLIBX)
-FLAGS	 	:= -Wall -Wextra -Werror -g
+FLAGS	 	:= -Wall -Wextra -Werror -g 
 SRCDIR		:= src
 OBJDIR		:= obj
 
@@ -60,7 +60,7 @@ endef
 ################################################################################
 #                                COMPILATION                                   #
 ################################################################################
-all: check-and-reinit-submodules $(LIBFT_LIB) $(MLIBX_LIB) banner $(NAME)
+all: $(LIBFT_LIB) $(MLIBX_LIB) banner $(NAME)
 
 $(NAME):  $(ALL_OBJS)
 	@$(CC) $^  $(LDFLAGS) $(XLIBS) -o $@ 

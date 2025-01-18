@@ -6,10 +6,10 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/23 21:43:57 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/15 04:09:13 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/18 11:13:17 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "../include/fractol.h"
+#include "fractol.h"
 
 /**
  * @brief closes out the session, destroy all mlx connections and free mem
@@ -36,7 +36,6 @@ void	move(t_fractal *f, int axis, double delta)
 	else if (axis == 'y')
 		f->shift.y += (delta * f->zoom);
 	render_f(f);
-	render_overlay(f);
 }
 
 /**
@@ -49,7 +48,6 @@ void	inc_iters(t_fractal *f, double delta)
 {
 	f->iters += delta;
 	render_f(f);
-	render_overlay(f);
 }
 
 /**
@@ -61,28 +59,30 @@ void	inc_iters(t_fractal *f, double delta)
  */
 void	zoom(t_fractal *f, int dir)
 {
+	t_complex	prezoom;
+	t_complex	postzoom;
+
+	mlx_mouse_get_pos(f->mlx_con, f->mlx_win,
+			(int *)&prezoom.x, (int *)&prezoom.y);
+	f->mouse.start = map_complex(&prezoom, f);
+	prezoom = f->mouse.start;
+	printf("\n%f %f", prezoom.x, prezoom.y );
 	if (dir > 0)
 	{
 		f->zoom *= 1.05;
-		//inc_iters(f, 10);
+		inc_iters(f, -1);
 	}
 	else if (dir < 0)
 	{
 		f->zoom *= 0.95;
-		//inc_iters(f, -10);
+		inc_iters(f, +1);
 	}
+	postzoom = map_complex(&f->mouse.start, f);
+	move(f, 'x', (prezoom.x - postzoom.x) );
+	move(f, 'y', (prezoom.y - postzoom.y) );
+	//f->shift.x += (prezoom.x - postzoom.x) * f->zoom;
+	//f->shift.y += (prezoom.y - postzoom.y) * f->zoom;
 	render_f(f);
-	render_overlay(f);
-}
-
-void	reset(t_fractal *f)
-{
-	f->zoom = 1.0;
-	f->iters = 50;
-	f->esc = 4;
-	f->shift = (t_complex){0, 0};
-	render_f(f);
-	render_overlay(f);
 }
 /**
  * @brief handles key inputs
@@ -93,17 +93,17 @@ void	reset(t_fractal *f)
  */
 int	key_handler(int keysym, t_fractal *f)
 {
-	printf("%i ", keysym);
+	printf("key: %d\n", keysym);
 	if (keysym == KEY_ESC)
 		close_handler(f);
 	if (keysym == KEY_LEFT)
-		move(f, 'x', -0.5);
+		move(f, 'x', -0.25);
 	else if (keysym == KEY_RIGHT)
-		move(f, 'x', 0.5);
+		move(f, 'x', 0.25);
 	else if (keysym == KEY_UP)
-		move(f, 'y', -0.5);
+		move(f, 'y', -0.25);
 	else if (keysym == KEY_DOWN)
-		move(f, 'y', 0.5);
+		move(f, 'y', 0.25);
 	else if (keysym == KEY_PLUS)
 		inc_iters(f, 10);
 	else if (keysym == KEY_MINUS)
@@ -115,14 +115,12 @@ int	key_handler(int keysym, t_fractal *f)
 	else if (keysym == KEY_R)
 		init_values(f);
 	else if (keysym == KEY_H)
-	{
 		f->show_help = !f->show_help;
-		render_f(f);
-        render_overlay(f);
-    }
+	else if (keysym == KEY_O)
+		f->overlay.is_visible = !f->overlay.is_visible;
+	render_overlay(f);
 	return (0);
 }
-
 
 /*
  * TRACK the mouse

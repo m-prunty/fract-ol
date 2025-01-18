@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/23 22:08:07 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/15 03:05:30 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/18 08:40:42 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -109,12 +109,15 @@ int	main(int ac, char **av)
 {
 	t_fractal	f;
 
+	ft_bzero(&f, sizeof(t_fractal));
 	if (check_args(ac, av, &f))
 	{
 		init_values(&f);
 		init_f(&f);
 		render_f(&f);
 		render_overlay(&f);
+		//		mlx_loop_hook(mlx, render_next_frame, YourStruct);
+	//	mlx_loop(mlx);
 		mlx_loop(f.mlx_con);
 	}
 	return (0);

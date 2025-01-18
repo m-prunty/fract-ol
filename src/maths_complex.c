@@ -2,7 +2,7 @@
 
 double	ft_complex_abs(t_complex complex)
 {
-	return (ft_sqrtbs(complex.x * complex.x + complex.y * complex.y));
+	return (sqrt(complex.x * complex.x + complex.y * complex.y));
 }
 
 double	ft_complex_dot(t_complex *a, t_complex *b)

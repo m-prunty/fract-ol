@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:38:26 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/15 03:07:29 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/18 10:55:45 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FRACTOL_H
@@ -18,6 +18,7 @@
 # include <stdlib.h>
 # include "../libft/include/libft.h"
 # include "../minilibx-linux/mlx.h"
+//# include "../MLX42/MLX42.h"
 
 # define HEIGHT 1060 
 # define WIDTH 1060 
@@ -55,11 +56,12 @@
 # define KEY_GT 44 
 # define KEY_R 114 
 # define KEY_H 104 
+# define KEY_O 111 
 
 //Error Messages
-# define ERR_NONE "no errors detected"
-# define ERR_MALLOC "malloc failed"
-# define ERR_INPUT "incorrect input;"
+# define ERR_NONE "no errors detected: "
+# define ERR_MALLOC "malloc failed "
+# define ERR_INPUT "incorrect input: "
 # define ERR_INPUT_VAL "input must b either 'm', 'j x y', or 'b x y'"
 # define ERR_INPUT_XY "must be initialised with x y in the form 'j x y'"
 # define ERR_MLX "mlx error; "
@@ -77,7 +79,7 @@ typedef struct s_data
 	int		line_length;
 	int		endian;
 	int		is_visible;
-}				t_data;
+}	t_data;
 
 /**
  * @typedef s_complex
@@ -89,6 +91,16 @@ typedef struct s_complex
 	double	x;
 	double	y;
 }	t_complex;
+
+/**
+ * @typedef s_infostr
+ * @brief for storing info strings
+ */
+typedef struct s_infostr	
+{
+	char	*str;
+	t_complex	c;
+}	t_infostr;
 
 /**
  * @typedef s_mouse
@@ -123,53 +135,60 @@ typedef struct s_fractal
 	int			show_help;
 }	t_fractal;
 
-// ../src/main.c
-int			error_func(int i, char *info);
-int			create_trgb(int t, int r, int g, int b);
-void		clean_fractal(t_fractal *f, int n_error, char *info);
-double		ft_atof(const char *nptr);
+// ./src/events.c
+int			close_handler(t_fractal *f);
+void		move(t_fractal *f, int axis, double delta);
+void		inc_iters(t_fractal *f, double delta);
+void		zoom(t_fractal *f, int dir);
+void		reset(t_fractal *f);
+int			key_handler(int keysym, t_fractal *f);
 
-// ../src/init.c
-void		init_cond(t_fractal *f, char **arg );
+// ./src/image.c
+int			linear_interpolation(double t, t_fractal *fractal);
+double		smooth(int i, t_complex z);
+int			is_mandelbulb(double x, double y);
+void		my_mlx_pixel_put(t_data *data, int x, int y, int color);
+t_complex	map_complex(t_complex *pixel, t_fractal *f);
+void		place_pixel(t_fractal *f, t_complex *pixel);
+void		render_chunk(t_fractal *f, int chunk_x, int chunk_y);
+void		render_f(t_fractal *f);
+void		clear_overlay(t_fractal *f);
+void		render_overlay(t_fractal *f);
+void		overlay_help(t_fractal *f);
+void		overlay(t_fractal *f);
+char		*str_parsed(t_infostr info);
+char		*ft_dtostr(double n, int precision);
+
+// ./src/init.c
 void		init_f(t_fractal *f);
+void		init_overlay(t_fractal *f);
 void		init_events(t_fractal *f);
 void		init_values(t_fractal *f);
 
-// ../src/image.c
-void		my_mlx_pixel_put(t_data *data, int x, int y, int color);
-void		place_pixel(t_fractal *f, t_complex *pixel);
-void		render_f(t_fractal *f);
+// ./src/main.c
+int			error_func(int i, char *info);
+void		clean_fractal(t_fractal *f, int n_error, char *info);
+double		ft_atof(const char *nptr);
+int			check_args(int ac, char **av, t_fractal *f);
 
-// ../src/maths_utils.c
+// ./src/maths_complex.c
+double		ft_complex_abs(t_complex complex);
+double		ft_complex_dot(t_complex *a, t_complex *b);
+void		ft_complex_exp(double angle, t_complex *result);
+t_complex	ft_complex_conjugate(t_complex a);
+t_complex	ft_complex_divide(t_complex numerator, t_complex denominator);
+
+// ./src/maths_util.c
 double		ft_min(double x, double y);
 double		ft_max(double x, double y);
 double		ft_pow(double d, int pow);
 double		ft_sqrtbs(double n);
-double		scale_linear(double n, t_complex new_minmax, t_complex old_minmax);
-int			is_mandelbulb(double x, double y);
-t_complex	map_complex(t_complex *pixel, t_fractal *f);
-
-// ../src/maths_complex.c
-double		ft_complex_abs(t_complex complex);
-double		ft_complex_dot(t_complex *a, t_complex *b);
-void		ft_complex_exp(double angle, t_complex *result);
+double		scale_linear(double n, t_complex p1, t_complex p2);
 t_complex	ft_complex_sqrd(t_complex z);
 t_complex	ft_complex_sum(t_complex z1, t_complex z2);
-t_complex	ft_complex_conjugate(t_complex a);
-t_complex	ft_complex_divide(t_complex numerator, t_complex denominator);
 
-// ../src/events.c
-int			close_handler(t_fractal *fractal);
-int			key_handler(int keysym, t_fractal *fractal);
-int			mouse_handler(int button, int x, int y, t_fractal *fractal);
-int			julia_track(int x, int y, t_fractal *fractal);
-
-// ../src/mouse.c
-void		draw_box(t_fractal *f);
+// ./src/mouse.c
 int			mouse_press(int button, int x, int y, t_fractal *f);
 int			mouse_motion(int x, int y, t_fractal *f);
 int			mouse_release(int button, int x, int y, t_fractal *f);
-
-void		render_overlay(t_fractal *f);
-void		init_overlay(t_fractal *f);
 #endif

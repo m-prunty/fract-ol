@@ -11,13 +11,13 @@ void	init_f(t_fractal *f)
 	f->mlx_con = mlx_init();
 	if (!(f->mlx_con))
 		return ((void)error_func(2, "Could not establish mlx_connection"));
-	f->mlx_win = mlx_new_window(f->mlx_con, HEIGHT, WIDTH, f->name);
+	f->mlx_win = mlx_new_window(f->mlx_con, f->scrsize.x, f->scrsize.y, f->name);
 	if (!(f->mlx_win))
-		return (clean_fractal(f, 3,"Could not establish mlx_new_window"));
-	f->img.img = mlx_new_image(f->mlx_con, HEIGHT, WIDTH);
+		return (clean_fractal(f, 3, "Could not establish mlx_new_window"));
+	f->img.img = mlx_new_image(f->mlx_con, f->scrsize.x, f->scrsize.y);
 	if (!(f->img.img))
 		return (clean_fractal(f, 4, "Could not establish mlx_new_image"));
-	f->img.pxl_addr = mlx_get_data_addr(f->img.img,	&f->img.bits_per_pixel,
+	f->img.pxl_addr = mlx_get_data_addr(f->img.img, &f->img.bits_per_pixel,
 			&f->img.line_length, &f->img.endian);
 	init_overlay(f);
 	init_events(f);
@@ -32,7 +32,7 @@ void	init_overlay(t_fractal *f)
 			&f->overlay.bits_per_pixel,
 			&f->overlay.line_length,
 			&f->overlay.endian);
-	f->overlay.is_visible = 0;
+	f->overlay.is_visible = 1;
 	f->show_help = 0;
 }
 
@@ -61,7 +61,7 @@ void	init_events(t_fractal *f)
 void	init_values(t_fractal *f)
 {
 	f->zoom = 1.0;
-	f->iters = 50;
+	f->iters = 15;
 	f->esc = 4;
 	f->minmax = (t_complex){2.5, -2.5};
 	f->shift = (t_complex){0.5, 1.25};
