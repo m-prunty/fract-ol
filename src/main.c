@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/23 22:08:07 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/18 08:40:42 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/19 22:11:30 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -48,8 +48,8 @@ void	clean_fractal(t_fractal *f, int n_error, char *info)
 		mlx_destroy_window(f->mlx_con, f->mlx_win);
 	if ((f->img.img))
 		mlx_destroy_image(f->mlx_con, f->img.img);
-	if ((f->overlay.img))
-		mlx_destroy_image(f->mlx_con, f->overlay.img);
+	if ((f->side.img))
+		mlx_destroy_image(f->mlx_con, f->side.img);
 	if (f->mlx_con)
 		mlx_destroy_display(f->mlx_con);
 	free(f->mlx_con);
@@ -91,12 +91,12 @@ double	ft_atof(const char *nptr)
 
 int	check_args(int ac, char **av, t_fractal *f)
 {
-	if (!(ac >= 2) || ! ((*(av++)) && (**av == 'j' || **av == 'm')))
+	if (!(ac >= 2) || ! ((*(av++)) && (**av == 'j' || **av == 'm' || **av == 's')))
 		return (error_func(1, ERR_INPUT_VAL));
 	f->name = *av++;
-	if (*f->name == 'j')
+	if ( *f->name == 'j' || *f->name == 's')
 	{
-		if (!ft_isnumf(*av) ||!ft_isnumf(*(av + 1)))
+		if (!ft_isnumf(*av) || (*f->name == 'j'  && !ft_isnumf(*(av + 1))))
 			return (error_func(1, ERR_INPUT_XY));
 		f->c = (t_complex){ft_atof(av[0]), ft_atof(av[1])};
 	}
@@ -115,7 +115,7 @@ int	main(int ac, char **av)
 		init_values(&f);
 		init_f(&f);
 		render_f(&f);
-		render_overlay(&f);
+		render_sidebar(&f);
 		//		mlx_loop_hook(mlx, render_next_frame, YourStruct);
 	//	mlx_loop(mlx);
 		mlx_loop(f.mlx_con);

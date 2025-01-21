@@ -11,28 +11,28 @@ void	init_f(t_fractal *f)
 	f->mlx_con = mlx_init();
 	if (!(f->mlx_con))
 		return ((void)error_func(2, "Could not establish mlx_connection"));
-	f->mlx_win = mlx_new_window(f->mlx_con, f->scrsize.x, f->scrsize.y, f->name);
+	f->mlx_win = mlx_new_window(f->mlx_con, f->winsize.x, f->winsize.y, f->name);
 	if (!(f->mlx_win))
 		return (clean_fractal(f, 3, "Could not establish mlx_new_window"));
-	f->img.img = mlx_new_image(f->mlx_con, f->scrsize.x, f->scrsize.y);
+	f->img.img = mlx_new_image(f->mlx_con, f->imgsize.x, f->imgsize.y);
 	if (!(f->img.img))
 		return (clean_fractal(f, 4, "Could not establish mlx_new_image"));
 	f->img.pxl_addr = mlx_get_data_addr(f->img.img, &f->img.bits_per_pixel,
 			&f->img.line_length, &f->img.endian);
-	init_overlay(f);
+	init_sidebar(f);
 	init_events(f);
 	return ;
 }
-void	init_overlay(t_fractal *f)
+void	init_sidebar(t_fractal *f)
 {
-	f->overlay.img = mlx_new_image(f->mlx_con, WIDTH, HEIGHT);
-	if (!f->overlay.img)
-		clean_fractal(f, 4, "Could not create overlay image");
-	f->overlay.pxl_addr = mlx_get_data_addr(f->overlay.img,
-			&f->overlay.bits_per_pixel,
-			&f->overlay.line_length,
-			&f->overlay.endian);
-	f->overlay.is_visible = 1;
+	f->side.img = mlx_new_image(f->mlx_con, f->sidesize.x, HEIGHT);
+	if (!f->side.img)
+		clean_fractal(f, 4, "Could not create sidebar image");
+	f->side.pxl_addr = mlx_get_data_addr(f->side.img,
+			&f->side.bits_per_pixel,
+			&f->side.line_length,
+			&f->side.endian);
+	f->side.is_visible = 1;
 	f->show_help = 0;
 }
 
@@ -49,8 +49,7 @@ void	init_events(t_fractal *f)
 	mlx_hook(f->mlx_win, MotionNotify, PointerMotionMask, mouse_motion, f);
 	mlx_hook(f->mlx_win, KeyPress, KeyPressMask, key_handler, f);
 	mlx_hook(f->mlx_win, DestroyNotify, StructureNotifyMask, close_handler, f);
-	/*	mlx_hook(f->mlx_win, MotionNotify, PointerMotionMask, julia_track, f);
-	*/
+//	mlx_hook(f->mlx_win, MotionNotify, PointerMotionMask, julia_track, f);
 }
 
 /**
@@ -58,15 +57,19 @@ void	init_events(t_fractal *f)
  *
  * @param f 
  */
-void	init_values(t_fractal *f)
+int	init_values(t_fractal *f)
 {
 	f->zoom = 1.0;
 	f->iters = 15;
 	f->esc = 4;
+	f->colour_shift = 1;
 	f->minmax = (t_complex){2.5, -2.5};
-	f->shift = (t_complex){0.5, 1.25};
-	f->scrsize = (t_complex){WIDTH, HEIGHT};
+	f->imgsize = (t_complex){WIDTH, HEIGHT};
+	f->sidesize = (t_complex){SWIDTH, HEIGHT};
+	f->winsize = (t_complex){WIDTH + SWIDTH, HEIGHT};
 	f->mouse.is_pressed = 0;
 	f->mouse.start = (t_complex){0, 0};
 	f->mouse.end = (t_complex){0, 0};
+	recentre(f);
+	return (1);
 }

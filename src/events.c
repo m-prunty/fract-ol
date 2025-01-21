@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/23 21:43:57 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/18 11:13:17 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/21 01:15:26 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -35,7 +35,8 @@ void	move(t_fractal *f, int axis, double delta)
 		f->shift.x += (delta * f->zoom);
 	else if (axis == 'y')
 		f->shift.y += (delta * f->zoom);
-	render_f(f);
+	f->centre = map_complex(&((t_complex){WIDTH / 2, HEIGHT / 2}), f);
+	return ;
 }
 
 /**
@@ -47,9 +48,26 @@ void	move(t_fractal *f, int axis, double delta)
 void	inc_iters(t_fractal *f, double delta)
 {
 	f->iters += delta;
-	render_f(f);
 }
+void	inc_esc(t_fractal *f, double delta)
+{
+	f->esc += delta;
+}
+void zoom_centre(t_fractal *f)
+{
+	double		d;
 
+	d = sqrt(ft_distsqrd(f->centre, f->mouse.end)) / 2;
+	if (f->mouse.end.x < f->centre.x)
+		move(f, 'x', -d);
+	else
+		move(f, 'x', d);
+	if (f->mouse.end.y < f->centre.y)
+		move(f, 'y', -d);
+	else
+		move(f, 'y', d);
+	return ;
+}
 /**
  * @brief function move the screen
  *
@@ -59,43 +77,69 @@ void	inc_iters(t_fractal *f, double delta)
  */
 void	zoom(t_fractal *f, int dir)
 {
-	t_complex	prezoom;
-	t_complex	postzoom;
+	int			x;
+	int			y;
 
-	mlx_mouse_get_pos(f->mlx_con, f->mlx_win,
-			(int *)&prezoom.x, (int *)&prezoom.y);
-	f->mouse.start = map_complex(&prezoom, f);
-	prezoom = f->mouse.start;
-	printf("\n%f %f", prezoom.x, prezoom.y );
+	mlx_mouse_get_pos(f->mlx_con, f->mlx_win, &x, &y);
+	f->mouse.start = map_complex(&((t_complex){x, y}), f);
 	if (dir > 0)
 	{
-		f->zoom *= 1.05;
+		f->zoom *= 1.10;
 		inc_iters(f, -1);
 	}
 	else if (dir < 0)
 	{
-		f->zoom *= 0.95;
+		f->zoom *= 0.90;
 		inc_iters(f, +1);
 	}
-	postzoom = map_complex(&f->mouse.start, f);
-	move(f, 'x', (prezoom.x - postzoom.x) );
-	move(f, 'y', (prezoom.y - postzoom.y) );
-	//f->shift.x += (prezoom.x - postzoom.x) * f->zoom;
-	//f->shift.y += (prezoom.y - postzoom.y) * f->zoom;
+	f->mouse.end = map_complex(&((t_complex){x, y}), f);
+	zoom_centre(f);
 	render_f(f);
 }
-/**
- * @brief handles key inputs
- *
- * @param keysym int representation of key pressed
- * @param f t_fractal
- * @return 0
- */
-int	key_handler(int keysym, t_fractal *f)
+int	recentre(t_fractal *f)
 {
-	printf("key: %d\n", keysym);
-	if (keysym == KEY_ESC)
-		close_handler(f);
+	f->centre = (t_complex){0, 0};
+	if (*f->name == 'j') 
+		f->shift = (t_complex){1.25, 1.25};
+	else if (*f->name == 's')
+		f->shift = (t_complex){0, 0};
+	else
+		f->shift = (t_complex){0.5, 1.25};
+	return (1);
+}
+int	switch_fractal(int keysym, t_fractal *f)
+{
+	if (keysym == KEY_J)
+		*f->name = 'j';
+	else if (keysym == KEY_M)
+		*f->name = 'm';
+	else if (keysym == KEY_S)
+		*f->name = 's';
+	init_values(f);
+	render_f(f);
+	return (0);
+}
+int	char_key_handler(int keysym, t_fractal *f)
+{
+	if (keysym == KEY_R && init_values(f))
+		render_f(f);
+	else if (keysym == KEY_H)
+		f->show_help = !f->show_help;
+	else if (keysym == KEY_O)
+		f->side.is_visible = !f->side.is_visible;
+	else if (keysym == KEY_C && recentre(f))
+		render_f(f);
+	else if (keysym == KEY_I)
+		inc_esc(f, 1);
+	else if (keysym == KEY_K)
+		inc_esc(f, -1);
+	else if (keysym == KEY_J || keysym == KEY_M || keysym == KEY_S)
+		switch_fractal(keysym, f);
+	render_sidebar(f);
+	return (0);
+}
+int image_key_handler(int keysym, t_fractal *f)
+{
 	if (keysym == KEY_LEFT)
 		move(f, 'x', -0.25);
 	else if (keysym == KEY_RIGHT)
@@ -112,30 +156,26 @@ int	key_handler(int keysym, t_fractal *f)
 		zoom(f, -1);
 	else if (keysym == KEY_GT)
 		zoom(f, 1);
-	else if (keysym == KEY_R)
-		init_values(f);
-	else if (keysym == KEY_H)
-		f->show_help = !f->show_help;
-	else if (keysym == KEY_O)
-		f->overlay.is_visible = !f->overlay.is_visible;
-	render_overlay(f);
+	else if (keysym == KEY_SPACE)
+		f->colour_shift += 2;
+	render_f(f);
+	render_sidebar(f);
 	return (0);
 }
-
-/*
- * TRACK the mouse
- * to change julia dynamically
- * int (*f)(int x, int y, void *param)
+/**
+ * @brief handles key inputs
+ *
+ * @param keysym int representation of key pressed
+ * @param f t_fractal
+ * @return 0
  */
-/*
-   int	julia_track(int x, int y, t_fractal *fractal)
-   {
-   if (!ft_strncmp(fractal->name, "julia", 5))
-   {
-   fractal->julia_x = (map(x, -2, +2, 0, WIDTH) * fractal->zoom) +
-   fractal->shift_x; fractal->julia_y = (map(y, +2, -2, 0, HEIGHT) * fractal->zoom)
-   + fractal->shift_y; fractal_render(fractal);
-   }
-   return 0;
-   }
-   */
+int	key_handler(int keysym, t_fractal *f)
+{
+	if (keysym == KEY_ESC)
+		close_handler(f);
+	if ((keysym >= 97 && keysym <= 122))
+		char_key_handler(keysym, f);
+	else
+		image_key_handler(keysym, f);
+	return (0);
+}

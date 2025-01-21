@@ -9,7 +9,7 @@ MLIBX_LIB	:= $(MLIBX)/libmlx.a
 
 LDFLAGS 	:= -L$(LIBFT) -lft -L$(MLIBX) -lmlx
 INCLUDE		:= -I$(LIBFT)/include -Iinclude -I$(MLIBX)
-FLAGS	 	:= -Wall -Wextra -Werror -g 
+FLAGS	 	:= -Wall -Wextra -Werror -g3 -fsanitize=address	
 SRCDIR		:= src
 OBJDIR		:= obj
 
@@ -27,32 +27,25 @@ BLUE		:= \033[1;34m
 CYAN		:= \033[1;36m
 PURPLE		:= \033[1;35m
 BOLD		:= \033[1m
+
+REWRITE		:= \033[0K\r
 ################################################################################
 #	                          SOURCE & OBJECT FILES                            #
 ################################################################################
 SRC   		:= $(wildcard $(SRCDIR)/*.c)
-OBJECTS	:= $(SRC:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+OBJECTS		:= $(SRC:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 
-ALL_OBJS := $(OBJECTS)
+ALL_OBJS	:= $(OBJECTS)
 
 ################################################################################
 #                                 PROGRESS BAR                                 #
 ################################################################################
-
-# Create a simpler compiler string for the dry run
-COMP_CHECK := gcc $(FLAGS) $(INCLUDE) -c
-
-# Count files that will actually need recompilation
-# TOTAL_FILES = $(shell $(MAKE) -n $(ALL_OBJS) 2>/dev/null | grep -o "$(CC).*\.c" | wc -l)
-# Get list of files that will actually be recompiled
-# TOTAL_FILES = $(shell $(MAKE) -n $(ALL_OBJS) 2>/dev/null | grep -o "$(CC).*\.c" | wc -l)
-# TOTAL_FILES = $
 TOTAL_FILES	:= $(words $(ALL_OBJS))
 CURR_FILE 	:= 0
 
 define progress_bar
 $(eval CURR_FILE = $(shell expr $(CURR_FILE) + 1))
-@printf "\r$(CYAN)⌛ [%-50s] %d/%d files - Compiling: $<$(CLR_RMV)\n" \
+@printf "\r$(CYAN)⌛ [%-50s] %d/%d files $(REWRITE) - Compiling: $<$(CLR_RMV)" \
     "$$(printf '#%.0s' $$(seq 1 $$(expr $(CURR_FILE) \* 50 / $(TOTAL_FILES))))" \
     $(CURR_FILE) $(TOTAL_FILES)
 endef
@@ -108,8 +101,8 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re banner progress_bar 
-	################################################################################
-	#                                     END                                      #
-	################################################################################
+################################################################################
+#                                     END                                      #
+################################################################################
 
 

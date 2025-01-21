@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/15 03:17:08 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/15 03:52:57 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/19 01:13:49 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../include/fractol.h"
@@ -72,6 +72,10 @@ double	scale_linear(double n, t_complex p1, t_complex p2)
 	return (p1.y + ((n - p1.x) * (p2.y - p1.y) / (p2.x - p1.x)));
 }
 
+double ft_distsqrd(t_complex a, t_complex b)
+{
+	return (ft_pow(a.x - b.x, 2) + ft_pow(a.y - b.y, 2));
+}
 /**
  * @brief (x + yi)^2 = (x^2 - y^2) + 2xyi
  *
