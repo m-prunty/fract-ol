@@ -1,15 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mouse.c                                            :+:      :+:    :+:   */
+/*   events_mouse.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/13 20:42:18 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/19 18:20:57 by mprunty          ###   ########.fr       */
+/*   Created: 2025/01/22 15:23:03 by mprunty           #+#    #+#             */
+/*   Updated: 2025/01/22 16:16:08 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
+
+int	switch_fractal(int keysym, t_fractal *f)
+{
+	if (keysym == KEY_J)
+		*f->name = 'j';
+	else if (keysym == KEY_M)
+		*f->name = 'm';
+	else if (keysym == KEY_S)
+		*f->name = 's';
+	init_values(f);
+	render_f(f);
+	return (0);
+}
 
 int	mouse_press(int button, int x, int y, t_fractal *f)
 {
@@ -30,8 +43,6 @@ int	mouse_press(int button, int x, int y, t_fractal *f)
 
 int	mouse_motion(int x, int y, t_fractal *f)
 {
-	//mlx_mouse_get_pos(f->mlx_con, f->mlx_win,
-	//	(int *)&f->mouse.start.x, (int *)&f->mouse.start.y);
 	f->mouse.start = map_complex(&(t_complex){x, y}, f);
 	if (f->mouse.is_pressed)
 		f->mouse.end = map_complex(&(t_complex){x, y}, f);
@@ -41,9 +52,6 @@ int	mouse_motion(int x, int y, t_fractal *f)
 
 int	mouse_release(int button, int x, int y, t_fractal *f)
 {
-	//t_complex	start_pos;
-	//t_complex	end_pos;
-	//double		ratio;
 	if (button == Button1)
 	{
 		f->mouse.is_pressed = 0;
@@ -53,16 +61,6 @@ int	mouse_release(int button, int x, int y, t_fractal *f)
 			f->c = f->mouse.end;
 			render_f(f);
 		}
-		//	start_pos = map_complex(&(
-		//				(t_complex){f->mouse.start.x, f->mouse.start.y}), f);
-		//	end_pos = map_complex(&(
-		//				(t_complex){f->mouse.end.x, f->mouse.end.y}), f);
-		//	ratio = fabs(end_pos.x - start_pos.x);
-		//	f->zoom = f->zoom / ratio;
-		//	f->shift.x = (start_pos.x + end_pos.x) / 2;
-		//	f->shift.y = (start_pos.y + end_pos.y) / 2;
 	}
-	//	render_sidebar(f);
 	return (0);
 }
-

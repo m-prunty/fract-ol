@@ -9,7 +9,7 @@ MLIBX_LIB	:= $(MLIBX)/libmlx.a
 
 LDFLAGS 	:= -L$(LIBFT) -lft -L$(MLIBX) -lmlx
 INCLUDE		:= -I$(LIBFT)/include -Iinclude -I$(MLIBX)
-FLAGS	 	:= -Wall -Wextra -Werror -g3 -fsanitize=address	
+FLAGS	 	:= -Wall -Wextra -Werror -g3   # -fsanitize=address	
 SRCDIR		:= src
 OBJDIR		:= obj
 
@@ -81,12 +81,6 @@ banner:
 	@echo "╚═══════════════════════════════════════════════════════════════╝"
 	@printf "%b" "$(CLR_RMV)"
 
-check-and-reinit-submodules:
-	@if git submodule status | egrep -q '^[-+]'; then \
-		echo "INFO: Need to reinitialize git submodules"; \
-		git submodule update --init; \
-		fi
-
 clean:
 	@printf "$(RED)🧹 Cleaning object files...$(CLR_RMV)\n"
 	@rm -rf $(OBJDIR)
@@ -103,6 +97,5 @@ re: fclean all
 .PHONY: all clean fclean re banner progress_bar 
 ################################################################################
 #                                     END                                      #
-################################################################################
-
-
+#
+###############################################################################

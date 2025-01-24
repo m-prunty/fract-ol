@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/22 16:21:43 by mprunty           #+#    #+#             */
+/*   Updated: 2025/01/22 20:01:44 by mprunty          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 #include "fractol.h"
 
 /**
@@ -11,7 +22,7 @@ void	init_f(t_fractal *f)
 	f->mlx_con = mlx_init();
 	if (!(f->mlx_con))
 		return ((void)error_func(2, "Could not establish mlx_connection"));
-	f->mlx_win = mlx_new_window(f->mlx_con, f->winsize.x, f->winsize.y, f->name);
+	f->mlx_win = mlx_new_window(f->mlx_con, f->wsize.x, f->wsize.y, f->name);
 	if (!(f->mlx_win))
 		return (clean_fractal(f, 3, "Could not establish mlx_new_window"));
 	f->img.img = mlx_new_image(f->mlx_con, f->imgsize.x, f->imgsize.y);
@@ -23,6 +34,7 @@ void	init_f(t_fractal *f)
 	init_events(f);
 	return ;
 }
+
 void	init_sidebar(t_fractal *f)
 {
 	f->side.img = mlx_new_image(f->mlx_con, f->sidesize.x, HEIGHT);
@@ -49,7 +61,6 @@ void	init_events(t_fractal *f)
 	mlx_hook(f->mlx_win, MotionNotify, PointerMotionMask, mouse_motion, f);
 	mlx_hook(f->mlx_win, KeyPress, KeyPressMask, key_handler, f);
 	mlx_hook(f->mlx_win, DestroyNotify, StructureNotifyMask, close_handler, f);
-//	mlx_hook(f->mlx_win, MotionNotify, PointerMotionMask, julia_track, f);
 }
 
 /**
@@ -66,7 +77,7 @@ int	init_values(t_fractal *f)
 	f->minmax = (t_complex){2.5, -2.5};
 	f->imgsize = (t_complex){WIDTH, HEIGHT};
 	f->sidesize = (t_complex){SWIDTH, HEIGHT};
-	f->winsize = (t_complex){WIDTH + SWIDTH, HEIGHT};
+	f->wsize = (t_complex){WIDTH + SWIDTH, HEIGHT};
 	f->mouse.is_pressed = 0;
 	f->mouse.start = (t_complex){0, 0};
 	f->mouse.end = (t_complex){0, 0};
