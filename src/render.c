@@ -6,10 +6,11 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:25:59 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/26 14:01:33 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/26 15:34:47 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
+
 /*
 void	render_sidebar(t_fractal *f)
 {
@@ -42,7 +43,7 @@ void	render_f(t_fractal *f)
 	t_complex	pixel;
 
 	if (*f->name == 's')
-	{	
+	{
 		if (f->tri)
 			clean_tri(f->tri);
 		init_serptri(f);
@@ -85,4 +86,19 @@ void	info_clr_init(t_fractal *f)
 		if (!f->info)
 			return ;
 	}
+}
+
+void	def_z_c(t_fractal *f, t_complex *pixel, t_complex *z, t_complex *c)
+{
+	if (*f->name == 'm' )
+	{
+		*z = (t_complex){0.0, 0.0};
+		*c = map_complex(pixel, f);
+	}
+	else
+	{
+		*z = map_complex(pixel, f);
+		*c = f->c;
+	}
+	return ;
 }

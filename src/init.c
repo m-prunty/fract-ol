@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 16:21:43 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/26 14:11:33 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/26 16:02:56 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -82,5 +82,32 @@ int	init_values(t_fractal *f)
 	f->mouse.pos = (t_complex){0, 0};
 	f->mouse.end = (t_complex){0, 0};
 	update_centre(f);
+	return (1);
+}
+
+int	init_serptri(t_fractal *f)
+{
+	f->tri = malloc(sizeof(t_tri));
+	if (!f->tri)
+		return (0);
+	update_centre(f);
+	f->tri->a = map_complex_tri(&(t_complex){
+			f->imgsize.x * 0.05, f->imgsize.y * 0.95}, f);
+	f->tri->b = map_complex_tri(&(t_complex){
+			f->imgsize.x * 0.95, f->imgsize.y * 0.95}, f);
+	f->tri->c = map_complex_tri(&(t_complex){
+			f->imgsize.x * 0.5, f->imgsize.y * 0.05}, f);
+	f->tri->sub1 = NULL;
+	f->tri->sub2 = NULL;
+	f->tri->sub3 = NULL;
+	f->tri->colour = 0x444444;
+	set_midpoint(&f->tri->mid_ab, &f->tri->a, &f->tri->b);
+	set_midpoint(&f->tri->mid_bc, &f->tri->b, &f->tri->c);
+	set_midpoint(&f->tri->mid_ca, &f->tri->c, &f->tri->a);
+	f->zoom = 1.0;
+	if (f->c.x >= 2)
+		f->iters = (int)f->c.x;
+	else
+		f->iters = 6;
 	return (1);
 }

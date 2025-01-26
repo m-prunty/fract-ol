@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:38:26 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/26 13:57:15 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/26 16:29:33 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FRACTOL_H
@@ -200,6 +200,9 @@ typedef struct s_fractal
 t_complex	map_complex_tri(t_complex *pixel, t_fractal *f);
 void		clean_tri(t_tri *t);
 void		update_centre(t_fractal *f);
+void		set_triangles(t_tri *parent, t_tri *child, t_tri *t, t_tri *parent_tri);
+void	def_z_c(t_fractal *f, t_complex *pixel, t_complex *z, t_complex *c);
+
 // ../src/events.c
 void		move(t_fractal *f, int axis, double delta);
 void		inc_iters(t_fractal *f, double delta);
@@ -247,7 +250,6 @@ int			tri_min(t_tri *tri, char axis);
 void		set_exact(t_complex *target, t_complex *src);
 void		set_midpoint(t_complex *target, t_complex *a, t_complex *b);
 void		triangle(t_fractal *f, t_tri *t);
-int			init_serptri(t_fractal *f);
 void		place_pixel_triangle(t_fractal *f, t_complex *pixel);
 
 // ../src/sidebar.c
@@ -262,6 +264,7 @@ void		init_f(t_fractal *f);
 void		init_sidebar(t_fractal *f);
 void		init_events(t_fractal *f);
 int			init_values(t_fractal *f);
+int			init_serptri(t_fractal *f);
 
 // ../src/main.c
 int			error_func(int i, char *info);

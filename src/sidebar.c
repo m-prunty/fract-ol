@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:27:12 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/26 14:00:30 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/26 15:22:00 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -52,6 +52,7 @@ int	sidestr_help(t_fractal *f)
 	f->help[11] = "";
 	return (11);
 }
+
 /*
 int	sidestr_info(t_fractal *f)
 {
