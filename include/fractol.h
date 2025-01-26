@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:38:26 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/22 22:44:37 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/26 13:57:15 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FRACTOL_H
@@ -115,7 +115,7 @@ typedef struct s_infostr
  */
 typedef struct s_mouse
 {
-	t_complex	start;
+	t_complex	pos;
 	t_complex	end;
 	int			is_pressed;
 }	t_mouse;
@@ -127,9 +127,7 @@ typedef struct s_triedge
 	double c;
 }	t_triedge;
 
-
-
-typedef	struct s_tri
+typedef struct s_tri
 {
 	t_complex		a;
 	t_complex		b;
@@ -137,21 +135,35 @@ typedef	struct s_tri
 	t_complex		mid_ab;
 	t_complex		mid_bc;
 	t_complex		mid_ca;
-	t_complex		mid;
-	double			dab;
-	double			dbc;
-	double			dac;
-	t_triedge		eab;
-	t_triedge		ebc;
-	t_triedge		eac;
-	t_complex		xbounds;
-	t_complex		ybounds;
+	int				colour;
 	struct s_tri	*sub1;
 	struct s_tri	*sub2;
 	struct s_tri	*sub3;
+} t_tri;
+/*
+   typedef	struct s_tri
+   {
+   t_complex		a;
+   t_complex		b;
+   t_complex		c;
+   t_complex		mid_ab;
+   t_complex		mid_bc;
+   t_complex		mid_ca;
+   t_complex		mid;
+   double			dab;
+   double			dbc;
+   double			dac;
+   t_triedge		eab;
+   t_triedge		ebc;
+   t_triedge		eac;
+   t_complex		xbounds;
+   t_complex		ybounds;
+   struct s_tri	*sub1;
+   struct s_tri	*sub2;
+   struct s_tri	*sub3;
 
-}	t_tri;
-
+   }	t_tri;
+   */
 /**
  * @typedef s_fractal
  * @brief 
@@ -170,6 +182,8 @@ typedef struct s_fractal
 	t_complex	wsize;
 	t_complex	imgsize;
 	t_complex	sidesize;
+	int			*offset;
+	int			*colour;
 	int			colour_shift;
 	int			iters;
 	int			esc;
@@ -182,6 +196,10 @@ typedef struct s_fractal
 	t_tri		*tri;
 }	t_fractal;
 
+
+t_complex	map_complex_tri(t_complex *pixel, t_fractal *f);
+void		clean_tri(t_tri *t);
+void		update_centre(t_fractal *f);
 // ../src/events.c
 void		move(t_fractal *f, int axis, double delta);
 void		inc_iters(t_fractal *f, double delta);
@@ -206,7 +224,8 @@ int			linear_interpolation(double t, t_fractal *f);
 double		smooth(int i, t_complex z);
 
 // ../src/pixel.c
-void		my_mlx_pixel_put(t_data *data, int x, int y, int color);
+void		pre_calc(t_fractal *f, t_data *data);
+void		my_mlx_pixel_put(t_fractal *f, int x, int y, int color);
 t_complex	map_complex(t_complex *pixel, t_fractal *f);
 void		place_pixel(t_fractal *f, t_complex *pixel);
 

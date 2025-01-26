@@ -9,7 +9,7 @@ MLIBX_LIB	:= $(MLIBX)/libmlx.a
 
 LDFLAGS 	:= -L$(LIBFT) -lft -L$(MLIBX) -lmlx
 INCLUDE		:= -I$(LIBFT)/include -Iinclude -I$(MLIBX)
-FLAGS	 	:= -Wall -Wextra -Werror -g3   # -fsanitize=address	
+FLAGS	 	:= -Wall -Wextra -Werror -g3 #  -fsanitize=address	
 SRCDIR		:= src
 OBJDIR		:= obj
 
