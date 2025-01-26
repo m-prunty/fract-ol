@@ -6,28 +6,11 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:25:59 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/22 22:35:04 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/26 14:01:33 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
-
-void	render_chunk(t_fractal *f, int chunk_x, int chunk_y)
-{
-	t_complex	pixel;
-
-	pixel.y = chunk_y;
-	while (pixel.y < fmin(chunk_y + CHUNKS, HEIGHT))
-	{
-		pixel.x = chunk_x;
-		while (pixel.x < fmin(chunk_x + CHUNKS, WIDTH))
-		{
-			pixel.x++;
-			place_pixel(f, &pixel);
-		}
-		pixel.y++;
-	}
-}
-
+/*
 void	render_sidebar(t_fractal *f)
 {
 	int		ilen;
@@ -53,33 +36,33 @@ void	render_sidebar(t_fractal *f)
 		i++;
 	}
 }
-
+*/
 void	render_f(t_fractal *f)
 {
-	int	x;
-	int	y;
+	t_complex	pixel;
 
 	if (*f->name == 's')
-	{
+	{	
+		if (f->tri)
+			clean_tri(f->tri);
 		init_serptri(f);
 		triangle(f, f->tri);
 	}
 	else
 	{
-		y = 0;
-		while (y < HEIGHT)
+		pixel.y = 0;
+		while (pixel.y < HEIGHT)
 		{
-			x = 0;
-			while (x < WIDTH)
+			pixel.x = 0;
+			while (pixel.x < WIDTH)
 			{
-				render_chunk(f, x, y);
-				x += CHUNKS;
+				place_pixel(f, &pixel);
+				pixel.x++;
 			}
-			y += CHUNKS;
+			pixel.y++;
 		}
 	}
 	mlx_put_image_to_window(f->mlx_con, f->mlx_win, f->img.img, 0, 0);
-	render_sidebar(f);
 	return ;
 }
 

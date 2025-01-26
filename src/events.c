@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/23 21:43:57 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/22 16:13:03 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/26 14:35:40 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -24,6 +24,7 @@ void	move(t_fractal *f, int axis, double delta)
 		f->shift.x += (delta * f->zoom);
 	else if (axis == 'y')
 		f->shift.y += (delta * f->zoom);
+	update_centre(f);
 	return ;
 }
 
@@ -42,12 +43,12 @@ void	zoom_centre(t_fractal *f)
 {
 	double		d;
 
-	d = sqrt(ft_distsqrd(f->centre, f->mouse.end)) / 2;
-	if (f->mouse.end.x < f->centre.x)
+	d = ft_distsqrd(f->centre, f->mouse.end) / 2;
+	if (f->mouse.pos.x < f->centre.x)
 		move(f, 'x', -d);
 	else
 		move(f, 'x', d);
-	if (f->mouse.end.y < f->centre.y)
+	if (f->mouse.pos.y < f->centre.y)
 		move(f, 'y', -d);
 	else
 		move(f, 'y', d);
@@ -60,6 +61,7 @@ void	zoom_centre(t_fractal *f)
  * @param f fractal object
  * @param axis axis i.e 'x' or 'y'
  * @param delta amount to move by
+ * Math.exp(Math.log(130/100) / 20)
  */
 void	zoom(t_fractal *f, int dir)
 {
@@ -67,30 +69,17 @@ void	zoom(t_fractal *f, int dir)
 	int			y;
 
 	mlx_mouse_get_pos(f->mlx_con, f->mlx_win, &x, &y);
-	f->mouse.start = map_complex(&((t_complex){x, y}), f);
+	f->mouse.pos = map_complex(&((t_complex){x, y}), f);
 	if (dir > 0)
 	{
-		f->zoom *= 1.10;
+		f->zoom *= 2 * exp(log(130 / 100) / 20);
 		inc_iters(f, -1);
 	}
 	else if (dir < 0)
 	{
-		f->zoom *= 0.90;
+		f->zoom /= 2 * exp(log(130 / 100) / 20);
 		inc_iters(f, +1);
 	}
-	f->mouse.end = map_complex(&((t_complex){x, y}), f);
 	zoom_centre(f);
 	render_f(f);
-}
-
-int	recentre(t_fractal *f)
-{
-	f->centre = (t_complex){0, 0};
-	if (*f->name == 'j')
-		f->shift = (t_complex){1.25, 1.25};
-	else if (*f->name == 's')
-		f->shift = (t_complex){0, 0};
-	else
-		f->shift = (t_complex){0.5, 1.25};
-	return (1);
 }

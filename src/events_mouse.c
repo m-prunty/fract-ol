@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:23:03 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/22 16:16:08 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/26 14:45:56 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -29,7 +29,7 @@ int	mouse_press(int button, int x, int y, t_fractal *f)
 	if (button == Button1)
 	{
 		f->mouse.is_pressed = 1;
-		f->mouse.start = (map_complex(&(t_complex){x, y}, f));
+		f->mouse.pos = (map_complex(&(t_complex){x, y}, f));
 	}
 	else if (button == Button4)
 		zoom(f, 1);
@@ -37,16 +37,12 @@ int	mouse_press(int button, int x, int y, t_fractal *f)
 		zoom(f, -1);
 	if (button == Button4 || button == Button5)
 		render_f(f);
-	render_sidebar(f);
 	return (0);
 }
 
 int	mouse_motion(int x, int y, t_fractal *f)
 {
-	f->mouse.start = map_complex(&(t_complex){x, y}, f);
-	if (f->mouse.is_pressed)
-		f->mouse.end = map_complex(&(t_complex){x, y}, f);
-	render_sidebar(f);
+	f->mouse.pos = map_complex(&(t_complex){x, y}, f);
 	return (0);
 }
 
@@ -55,10 +51,10 @@ int	mouse_release(int button, int x, int y, t_fractal *f)
 	if (button == Button1)
 	{
 		f->mouse.is_pressed = 0;
-		f->mouse.end = map_complex(&(t_complex){x, y}, f);
+		f->mouse.pos = map_complex(&(t_complex){x, y}, f);
 		if (*f->name == 'j')
 		{
-			f->c = f->mouse.end;
+			f->c = f->mouse.pos;
 			render_f(f);
 		}
 	}

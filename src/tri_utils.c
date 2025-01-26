@@ -1,14 +1,15 @@
 /* ************************************************************************** */
-/*																			*/
-/*														:::	  ::::::::   */
-/*   image.c                                            :+:      :+:    :+:   */
-/*													+:+ +:+		 +:+	 */
-/*   By: mprunty <mprunty@student.42london.com>	 +#+  +:+	   +#+		*/
-/*												+#+#+#+#+#+   +#+		   */
-/*   Created: 2025/01/09 11:37:23 by mprunty		   #+#	#+#			 */
-/*   Updated: 2025/01/22 20:20:48 by mprunty          ###   ########.fr       */
-/*																			*/
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tri_utils.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/24 13:25:17 by mprunty           #+#    #+#             */
+/*   Updated: 2025/01/25 19:12:44 by mprunty          ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
+
 #include "fractol.h"
 
 t_complex	tri_mid(t_tri tri)
@@ -39,7 +40,7 @@ void	init_edges(t_triedge *e, t_complex v1, t_complex v2)
 	e->b = sqrt(v2.x - v1.x) / len;
 	e->c = v1.x * v2.y - v2.x * v1.y;
 }
-
+/*
 t_tri	*tri_def(t_tri *tri, t_complex a, t_complex b, t_complex c)
 {
 	tri = (t_tri *)malloc(sizeof(t_tri));
@@ -59,6 +60,7 @@ t_tri	*tri_def(t_tri *tri, t_complex a, t_complex b, t_complex c)
 		fmax(a.y, fmax(b.y, c.y))};
 	return (tri);
 }
+*/
 /*
 //E(x,y)=(v2.x−v1.x)(y−v1.y)−(v2.y−v1.y)(x−v1.x)
 //E(x,y)=(v2.y−v1.y)x−(v2.x−v1.x)y+(v2.xv1.y−v1.xv2.y)

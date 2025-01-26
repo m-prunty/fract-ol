@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/15 03:17:08 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/22 19:54:35 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/26 13:42:53 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "../include/fractol.h"
@@ -41,6 +41,15 @@ t_complex	ft_complex_sqrd(t_complex z)
 
 	c.x = pow(z.x, 2) - pow(z.y, 2);
 	c.y = 2 * (z.x) * (z.y);
+	return (c);
+}
+
+t_complex	ft_complex_sub(t_complex z1, t_complex z2)
+{
+	t_complex	c;
+
+	c.x = (z1.x) - (z2.x);
+	c.y = (z1.y) - (z2.y);
 	return (c);
 }
 

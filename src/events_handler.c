@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:22:03 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/22 16:30:16 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/24 15:25:24 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -23,7 +23,6 @@ int	char_key_handler(int keysym, t_fractal *f)
 		render_f(f);
 	else if (keysym == KEY_J || keysym == KEY_M || keysym == KEY_S)
 		switch_fractal(keysym, f);
-	render_sidebar(f);
 	return (0);
 }
 
@@ -48,7 +47,6 @@ int	image_key_handler(int keysym, t_fractal *f)
 	else if (keysym == KEY_SPACE)
 		f->colour_shift += 2;
 	render_f(f);
-	render_sidebar(f);
 	return (0);
 }
 

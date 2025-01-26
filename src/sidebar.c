@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:27:12 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/22 22:58:53 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/26 14:00:30 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -27,7 +27,7 @@ void	clear_sidebar(t_fractal *f)
 		x = WIDTH;
 		while (x < WIDTH + SWIDTH)
 		{
-			my_mlx_pixel_put(&f->side, x, y, 0x00000000);
+			my_mlx_pixel_put(f, x, y, 0x00000000);
 			x++;
 		}
 		y++;
@@ -52,7 +52,7 @@ int	sidestr_help(t_fractal *f)
 	f->help[11] = "";
 	return (11);
 }
-
+/*
 int	sidestr_info(t_fractal *f)
 {
 	t_infostr	data[12];
@@ -79,7 +79,7 @@ int	sidestr_info(t_fractal *f)
 	}
 	return (i);
 }
-
+*/
 char	*str_parsed(t_infostr info)
 {
 	char	*res;

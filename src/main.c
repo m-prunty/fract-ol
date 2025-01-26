@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/23 22:08:07 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/22 22:35:54 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/26 08:24:41 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -58,6 +58,8 @@ void	clean_fractal(t_fractal *f, int n_error, char *info)
 	if (f->info)
 		while (f->info[i])
 			free(f->info[i]);
+	if (f->tri)
+		clean_tri(f->tri);
 	free(f->help);
 	free(f->mlx_con);
 	return ;
@@ -122,8 +124,8 @@ int	main(int ac, char **av)
 	{
 		init_values(&f);
 		init_f(&f);
+		pre_calc(&f, &f.img);
 		render_f(&f);
-		render_sidebar(&f);
 		mlx_loop(f.mlx_con);
 	}
 	return (0);

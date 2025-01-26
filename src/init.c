@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 16:21:43 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/22 20:01:44 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/26 14:11:33 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -77,10 +77,10 @@ int	init_values(t_fractal *f)
 	f->minmax = (t_complex){2.5, -2.5};
 	f->imgsize = (t_complex){WIDTH, HEIGHT};
 	f->sidesize = (t_complex){SWIDTH, HEIGHT};
-	f->wsize = (t_complex){WIDTH + SWIDTH, HEIGHT};
+	f->wsize = (t_complex){WIDTH, HEIGHT};
 	f->mouse.is_pressed = 0;
-	f->mouse.start = (t_complex){0, 0};
+	f->mouse.pos = (t_complex){0, 0};
 	f->mouse.end = (t_complex){0, 0};
-	recentre(f);
+	update_centre(f);
 	return (1);
 }

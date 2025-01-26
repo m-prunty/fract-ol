@@ -6,10 +6,22 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:23:46 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/22 18:49:03 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/26 14:46:21 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
+
+void	precalc_colour(t_fractal *f)
+{
+	int	i;
+
+	i = 0;
+	while (i < 256)
+	{
+		f->colour[i] = linear_interpolation((double)i / 255, f);
+		i++;
+	}
+}
 
 int	linear_interpolation(double t, t_fractal *f)
 {
@@ -26,7 +38,7 @@ int	linear_interpolation(double t, t_fractal *f)
 
 double	smooth(int i, t_complex z)
 {
-	return (i + 1 - log(log(z.x * z.x + z.y * z.y)) / log(2));
+	return (i + 1 - log(log(z.x * z.x + z.y * z.y)) / M_LN2);
 }
 
 int	is_mandelbulb(double x, double y)
