@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/23 22:08:07 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/27 14:49:34 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/29 10:51:46 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -82,7 +82,7 @@ double	ft_atof(const char *nptr)
 int	check_args(int ac, char **av, t_fractal *f)
 {
 	if (!(ac >= 2)
-		|| ! ((*(av++)) && (**av == 'j' || **av == 'm' || **av == 's')))
+		|| ! ((*(++av)) && (**av == 'j' || **av == 'm' || **av == 's')))
 		return (error_func(1, ERR_INPUT_VAL));
 	f->name = *av++;
 	if (*f->name == 'j' || *f->name == 's')
