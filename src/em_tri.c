@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:26:30 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/26 16:15:17 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/29 13:13:12 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -56,11 +56,11 @@ void	subtriangle(t_fractal *f, t_tri *p_tri, t_tri *c_tri, int depth)
 	i = 3;
 	if (depth >= f->iters)
 		return ;
-	draw_triangle(f, c_tri, c_tri->colour);
+	draw_triangle(f, c_tri, c_tri->colour + f->colour_shift);
 	set_triangles(parent, child, c_tri, p_tri);
 	colour = ((int)((c_tri->colour >> 16) * 0.9) << 16)
-		+ ((int)(((c_tri->colour >> 8) & 0xFF) * 0.9) << 8)
-		+ (int)((c_tri->colour & 0xFF) * 0.9);
+		+ ((int)(((c_tri->colour >> 8)) * 0.9) << 8)
+		+ (int)((c_tri->colour) * 0.9);
 	while (--i + 1)
 	{
 		child[i].colour = colour;
@@ -79,7 +79,7 @@ void	triangle(t_fractal *f, t_tri *t)
 		draw_line(f, pixel, (t_complex){f->imgsize.x, pixel.y}, BLACK);
 		pixel.y++;
 	}
-	draw_triangle(f, t, t->colour);
+	draw_triangle(f, t, t->colour + f->colour_shift);
 	child.colour = RED + f->colour_shift;
 	set_midpoint(&child.a, &t->a, &t->c);
 	set_midpoint(&child.b, &t->b, &t->c);

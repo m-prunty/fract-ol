@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:38:26 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/29 07:33:27 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/29 15:12:24 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FRACTOL_H
@@ -88,7 +88,6 @@ typedef struct s_data
 	int		is_visible;
 }	t_data;
 
-
 /**
  * @typedef s_complex
  * @brief for storing complex values, x is real and y imaginary
@@ -108,16 +107,6 @@ typedef struct s_event
 }	t_event;
 
 /**
- * @typedef s_infostr
- * @brief for storing info strings
- */
-typedef struct s_infostr	
-{
-	char		*str;
-	t_complex	c;
-}	t_infostr;
-
-/**
  * @typedef s_mouse
  * @brief for storing mouse data
  */
@@ -127,7 +116,6 @@ typedef struct s_mouse
 	t_complex	trans;
 	int			is_pressed;
 }	t_mouse;
-
 
 typedef struct s_tri
 {
@@ -181,7 +169,8 @@ typedef struct s_fractal
 t_complex	map_complex_tri(t_complex *pixel, t_fractal *f);
 void		clean_tri(t_tri *t);
 void		update_centre(t_fractal *f);
-void		set_triangles(t_tri *parent, t_tri *child, t_tri *t, t_tri *parent_tri);
+void		set_triangles(t_tri *parent, t_tri *child,
+				t_tri *t, t_tri *parent_tri);
 void		def_z_c(t_fractal *f, t_complex *pixel, t_complex *z, t_complex *c);
 
 int			mouse_handler(int button, int x, int y, t_fractal *f);
@@ -204,7 +193,6 @@ void		add_event(t_fractal *f, int keysym, t_complex data);
 int			event_loop(t_fractal *f);
 void		process_events(t_fractal *f);
 void		clear_events(t_fractal *f);
-
 
 // ../src/events.c
 int			move(t_fractal *f, int axis, double delta);
@@ -273,6 +261,3 @@ t_complex	ft_complex_sum(t_complex z1, t_complex z2);
 int			is_mandelbulb(double x, double y);
 
 #endif
-
-
-

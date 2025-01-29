@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 16:21:43 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/29 11:29:12 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/29 13:16:26 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -71,7 +71,7 @@ void	init_events(t_fractal *f)
 int	init_values(t_fractal *f)
 {
 	f->zoom = 1.0;
-	f->iters = 15;
+	f->iters = 100;
 	f->esc = 4;
 	f->colour_shift = 1;
 	f->range = (t_complex){2.5, -2.5};

@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:25:59 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/29 12:13:31 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/29 15:14:48 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -36,11 +36,15 @@ void	render_f(t_fractal *f)
 			pixel.y++;
 		}
 	}
-	printf("zoom = %f, shift = %f, %f, centre = %f, %f, mouse= %f, %f, iters= %d, f.c= %f,%f\n", f->zoom, f->shift.x, f->shift.y, f->centre.x, f->centre.y, f->mouse.pos.x, f->mouse.pos.y, f->iters, f->c.x, f->c.y);
 	mlx_put_image_to_window(f->mlx_con, f->mlx_win, f->img.img, 0, 0);
 	return ;
 }
 
+/*	printf("zoom = %f, shift = %f, %f, centre = %f, %f,\
+			mouse= %f, %f, iters= %d, f.c= %f,%f\n",\
+			f->zoom, f->shift.x, f->shift.y, f->centre.x, f->centre.y,
+			f->mouse.pos.x, f->mouse.pos.y, f->iters, f->c.x, f->c.y);
+*/
 void	info_clr_init(t_fractal *f)
 {
 	int	i;

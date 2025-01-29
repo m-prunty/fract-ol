@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/26 16:06:35 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/26 16:07:37 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/29 15:09:26 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -38,8 +38,10 @@ void	clean_fractal(t_fractal *f, int n_error, char *info)
 			free(f->info[i]);
 	if (f->tri)
 		clean_tri(f->tri);
-	free(f->help);
+	free(f->offset);
 	free(f->mlx_con);
+	if (f->events)
+		clear_events(f);
 	return ;
 }
 

@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:23:03 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/29 12:14:03 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/29 12:59:53 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -58,9 +58,10 @@ int	mouse_press(int button, int x, int y, t_fractal *f)
 	return (0);
 }
 
+//printf("mouse.pos: %f, %f mouse.trans: %f, %f\n",f->mouse.pos.x,
+//f->mouse.pos.y, f->mouse.trans.x, f->mouse.trans.y);
 int	mouse_motion(int x, int y, t_fractal *f)
 {
 	f->mouse.pos = (t_complex){x, y};
-	printf("mouse.pos: %f, %f mouse.trans: %f, %f\n",f->mouse.pos.x, f->mouse.pos.y, f->mouse.trans.x, f->mouse.trans.y);
 	return (0);
 }
