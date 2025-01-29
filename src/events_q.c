@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/28 09:16:50 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/29 06:45:14 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/29 11:31:12 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -19,7 +19,7 @@ void	add_event(t_fractal *f, int keysym, t_complex data)
 	new_event = (t_event *)malloc(sizeof(t_event));
 	if (!new_event)
 	{
-		return ;//error_func(1, "Failed to allocate memory for event");
+		return ;
 	}
 	new_event->keysym = keysym;
 	new_event->data = data;
@@ -35,7 +35,7 @@ void	add_event(t_fractal *f, int keysym, t_complex data)
 	}
 }
 
-int event_loop(t_fractal *f)
+int	event_loop(t_fractal *f)
 {
 	f->frame_count++;
 	if (f->frame_count >= f->debounce_frames)
@@ -44,10 +44,10 @@ int event_loop(t_fractal *f)
 		{
 			process_events(f);
 			render_f(f);
-			f->frame_count = 0; // Reset the frame counter
+			f->frame_count = 0;
 		}
 	}
-	return 0; // Return 0 to continue the loop
+	return (0);
 }
 
 void	process_events(t_fractal *f)
@@ -66,9 +66,9 @@ void	process_events(t_fractal *f)
 		else
 			image_key_handler(current->keysym, f);
 		current = current->next;
-		free(tmp); // Free the processed event
+		free(tmp);
 	}
-	f->events = NULL; // Reset the queue
+	f->events = NULL;
 }
 
 void	clear_events(t_fractal *f)

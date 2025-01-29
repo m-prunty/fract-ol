@@ -6,39 +6,11 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:25:59 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/29 07:28:29 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/29 12:13:31 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
-#include <stdio.h>
 
-/*
-void	render_sidebar(t_fractal *f)
-{
-	int		ilen;
-	int		hlen;
-	int		i;
-
-	i = 0;
-	ilen = 0;
-	hlen = 0;
-	clear_sidebar(f);
-	if (f->side.is_visible)
-		ilen = sidestr_info(f);
-	if (f->show_help)
-		hlen = sidestr_help(f);
-	while (i < ilen || i < hlen)
-	{
-		if (f->side.is_visible && i < ilen)
-			mlx_string_put(f->mlx_con, f->mlx_win, f->imgsize.x + 10,
-				(i * 20) + 10, WHITE, f->info[i]);
-		if (f->show_help && i < hlen)
-			mlx_string_put(f->mlx_con, f->mlx_win, f->imgsize.x + 10,
-				(HEIGHT - hlen * 20) + (i * 20), WHITE, f->help[i]);
-		i++;
-	}
-}
-*/
 void	render_f(t_fractal *f)
 {
 	t_complex	pixel;
@@ -64,7 +36,7 @@ void	render_f(t_fractal *f)
 			pixel.y++;
 		}
 	}
-	printf("zoom = %f, shift = %f, %f, centre = %f, %f, mouse= %f, %f, iters= %d\n", f->zoom, f->shift.x, f->shift.y, f->centre.x, f->centre.y, f->mouse.pos.x, f->mouse.pos.y, f->iters);
+	printf("zoom = %f, shift = %f, %f, centre = %f, %f, mouse= %f, %f, iters= %d, f.c= %f,%f\n", f->zoom, f->shift.x, f->shift.y, f->centre.x, f->centre.y, f->mouse.pos.x, f->mouse.pos.y, f->iters, f->c.x, f->c.y);
 	mlx_put_image_to_window(f->mlx_con, f->mlx_win, f->img.img, 0, 0);
 	return ;
 }

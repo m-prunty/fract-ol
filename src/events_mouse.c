@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:23:03 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/29 07:30:45 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/29 12:14:03 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -20,7 +20,7 @@ t_complex	mouse_translate(t_fractal *f, int x, int y)
 }
 
 void	mouse_zoom(t_fractal *f, int dir)
-{ 
+{
 	t_complex	mouse_pre;
 	t_complex	mouse_post;
 
@@ -33,6 +33,7 @@ void	mouse_zoom(t_fractal *f, int dir)
 	update_centre(f);
 	return ;
 }
+
 int	mouse_handler(int button, int x, int y, t_fractal *f)
 {
 	t_complex	pos;
@@ -45,13 +46,12 @@ int	mouse_handler(int button, int x, int y, t_fractal *f)
 int	mouse_press(int button, int x, int y, t_fractal *f)
 {
 	mouse_translate(f, x, y);
-	//	printf("mouse pos: %f, %f mouse trans: %f, %f\n", f->mouse.pos.x, f->mouse.pos.y, f->mouse.trans.x, f->mouse.trans.y);
 	if (*f->name == 'j' && button == Button1)
 	{
-		f->c = f->mouse.pos;
+		f->c = f->mouse.trans;
 		return (1);
 	}
-	if (button == Button1 || button ==  Button4)
+	if (button == Button1 || button == Button4)
 		mouse_zoom(f, 1);
 	else if (button == Button3 || button == Button5)
 		mouse_zoom(f, -1);
@@ -61,7 +61,6 @@ int	mouse_press(int button, int x, int y, t_fractal *f)
 int	mouse_motion(int x, int y, t_fractal *f)
 {
 	f->mouse.pos = (t_complex){x, y};
-	printf("mouse.pos: %f, %f mouse.trans: %f, %f\n", f->mouse.pos.x, f->mouse.pos.y, f->mouse.trans.x, f->mouse.trans.y);
-	//	printf("mouse pos: %f, %f mouse trans: %f, %f\n", f->mouse.pos.x, f->mouse.pos.y, f->mouse.trans.x, f->mouse.trans.y);
+	printf("mouse.pos: %f, %f mouse.trans: %f, %f\n",f->mouse.pos.x, f->mouse.pos.y, f->mouse.trans.x, f->mouse.trans.y);
 	return (0);
 }

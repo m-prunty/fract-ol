@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 16:21:43 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/29 00:29:35 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/29 11:29:12 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -60,7 +60,7 @@ void	init_events(t_fractal *f)
 	mlx_hook(f->mlx_win, MotionNotify, PointerMotionMask, mouse_motion, f);
 	mlx_hook(f->mlx_win, KeyPress, KeyPressMask, key_handler, f);
 	mlx_hook(f->mlx_win, DestroyNotify, StructureNotifyMask, close_handler, f);
-    mlx_loop_hook(f->mlx_con, event_loop, f);
+	mlx_loop_hook(f->mlx_con, event_loop, f);
 }
 
 /**
@@ -81,9 +81,9 @@ int	init_values(t_fractal *f)
 	f->mouse.is_pressed = 0;
 	f->mouse.pos = (t_complex){0, 0};
 	f->mouse.trans = (t_complex){0, 0};
-    f->events = NULL;
-    f->frame_count = 0;
-    f->debounce_frames = 60;
+	f->events = NULL;
+	f->frame_count = 0;
+	f->debounce_frames = 60;
 	recentre(f);
 	return (1);
 }

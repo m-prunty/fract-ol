@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/23 21:43:57 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/29 07:15:41 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/29 11:30:48 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -52,7 +52,7 @@ int	zoom(t_fractal *f, int dir)
 {
 	double	factor;
 
-	factor = 1.1;//exp(log(120.0 / 100.0) / 20);
+	factor = 1.1;
 	if (dir > 0)
 	{
 		f->zoom /= factor;

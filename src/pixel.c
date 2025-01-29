@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:25:39 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/27 12:16:18 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/29 12:10:45 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -36,6 +36,11 @@ void	my_mlx_pixel_put(t_fractal *f, int x, int y, int color)
 {
 	int	dst;
 
+	if (x < 0 || y < 0)
+	{
+		error_func(1, "pixel put out of bounds!");
+		return ;
+	}
 	dst = f->offset[y * (int)f->imgsize.x + x];
 	*(unsigned *)(f->img.pxl_addr + dst) = color;
 	return ;
@@ -54,11 +59,10 @@ t_complex	map_complex(t_complex *pixel, t_fractal *f)
 
 t_complex	map_complex_tri(t_complex *pixel, t_fractal *f)
 {
-	pixel->x = (pixel->x - f->centre.x) * f->zoom + f->centre.x + f->shift.x;
-	pixel->y = (pixel->y - f->centre.y) * f->zoom + f->centre.y + f->shift.y;
+	pixel->x = (pixel->x - f->centre.x) + f->centre.x + f->shift.x;
+	pixel->y = (pixel->y - f->centre.y) + f->centre.y + f->shift.y;
 	return (*pixel);
 }
-
 
 void	place_pixel(t_fractal *f, t_complex *pixel)
 {
