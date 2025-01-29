@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 16:21:43 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/26 16:02:56 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/29 00:29:35 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -56,11 +56,11 @@ void	init_sidebar(t_fractal *f)
  */
 void	init_events(t_fractal *f)
 {
-	mlx_hook(f->mlx_win, ButtonPress, ButtonPressMask, mouse_press, f);
-	mlx_hook(f->mlx_win, ButtonRelease, ButtonReleaseMask, mouse_release, f);
+	mlx_hook(f->mlx_win, ButtonPress, ButtonPressMask, mouse_handler, f);
 	mlx_hook(f->mlx_win, MotionNotify, PointerMotionMask, mouse_motion, f);
 	mlx_hook(f->mlx_win, KeyPress, KeyPressMask, key_handler, f);
 	mlx_hook(f->mlx_win, DestroyNotify, StructureNotifyMask, close_handler, f);
+    mlx_loop_hook(f->mlx_con, event_loop, f);
 }
 
 /**
@@ -74,14 +74,17 @@ int	init_values(t_fractal *f)
 	f->iters = 15;
 	f->esc = 4;
 	f->colour_shift = 1;
-	f->minmax = (t_complex){2.5, -2.5};
+	f->range = (t_complex){2.5, -2.5};
 	f->imgsize = (t_complex){WIDTH, HEIGHT};
 	f->sidesize = (t_complex){SWIDTH, HEIGHT};
 	f->wsize = (t_complex){WIDTH, HEIGHT};
 	f->mouse.is_pressed = 0;
 	f->mouse.pos = (t_complex){0, 0};
-	f->mouse.end = (t_complex){0, 0};
-	update_centre(f);
+	f->mouse.trans = (t_complex){0, 0};
+    f->events = NULL;
+    f->frame_count = 0;
+    f->debounce_frames = 60;
+	recentre(f);
 	return (1);
 }
 

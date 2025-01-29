@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/13 12:38:26 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/26 16:29:33 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/29 07:33:27 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef FRACTOL_H
@@ -52,8 +52,8 @@
 # define KEY_DOWN 65364
 # define KEY_PLUS 61 
 # define KEY_MINUS 45 
-# define KEY_LT 46 
-# define KEY_GT 44 
+# define KEY_LT 44 
+# define KEY_GT 46 
 # define KEY_R 114 
 # define KEY_H 104 
 # define KEY_O 111 
@@ -88,6 +88,7 @@ typedef struct s_data
 	int		is_visible;
 }	t_data;
 
+
 /**
  * @typedef s_complex
  * @brief for storing complex values, x is real and y imaginary
@@ -98,6 +99,13 @@ typedef struct s_complex
 	double	x;
 	double	y;
 }	t_complex;
+
+typedef struct s_event
+{
+	int				keysym;
+	t_complex		data;
+	struct s_event	*next;
+}	t_event;
 
 /**
  * @typedef s_infostr
@@ -116,16 +124,10 @@ typedef struct s_infostr
 typedef struct s_mouse
 {
 	t_complex	pos;
-	t_complex	end;
+	t_complex	trans;
 	int			is_pressed;
 }	t_mouse;
 
-typedef struct s_triedge
-{
-	double a;
-	double b;
-	double c;
-}	t_triedge;
 
 typedef struct s_tri
 {
@@ -139,31 +141,8 @@ typedef struct s_tri
 	struct s_tri	*sub1;
 	struct s_tri	*sub2;
 	struct s_tri	*sub3;
-} t_tri;
-/*
-   typedef	struct s_tri
-   {
-   t_complex		a;
-   t_complex		b;
-   t_complex		c;
-   t_complex		mid_ab;
-   t_complex		mid_bc;
-   t_complex		mid_ca;
-   t_complex		mid;
-   double			dab;
-   double			dbc;
-   double			dac;
-   t_triedge		eab;
-   t_triedge		ebc;
-   t_triedge		eac;
-   t_complex		xbounds;
-   t_complex		ybounds;
-   struct s_tri	*sub1;
-   struct s_tri	*sub2;
-   struct s_tri	*sub3;
+}	t_tri;
 
-   }	t_tri;
-   */
 /**
  * @typedef s_fractal
  * @brief 
@@ -177,7 +156,7 @@ typedef struct s_fractal
 	t_data		side;
 	double		zoom;
 	t_complex	shift;
-	t_complex	minmax;
+	t_complex	range;
 	t_complex	c;
 	t_complex	wsize;
 	t_complex	imgsize;
@@ -194,22 +173,18 @@ typedef struct s_fractal
 	char		**info;
 	char		**help;
 	t_tri		*tri;
+	t_event		*events;
+	int			frame_count;
+	int			debounce_frames;
 }	t_fractal;
-
 
 t_complex	map_complex_tri(t_complex *pixel, t_fractal *f);
 void		clean_tri(t_tri *t);
 void		update_centre(t_fractal *f);
 void		set_triangles(t_tri *parent, t_tri *child, t_tri *t, t_tri *parent_tri);
-void	def_z_c(t_fractal *f, t_complex *pixel, t_complex *z, t_complex *c);
+void		def_z_c(t_fractal *f, t_complex *pixel, t_complex *z, t_complex *c);
 
-// ../src/events.c
-void		move(t_fractal *f, int axis, double delta);
-void		inc_iters(t_fractal *f, double delta);
-void		zoom_centre(t_fractal *f);
-void		zoom(t_fractal *f, int dir);
-int			recentre(t_fractal *f);
-
+int			mouse_handler(int button, int x, int y, t_fractal *f);
 // ../src/events_handler.c
 int			close_handler(t_fractal *f);
 int			char_key_handler(int keysym, t_fractal *f);
@@ -217,10 +192,25 @@ int			image_key_handler(int keysym, t_fractal *f);
 int			key_handler(int keysym, t_fractal *f);
 
 // ../src/events_mouse.c
+t_complex	mouse_translate(t_fractal *f, int x, int y);
 int			mouse_press(int button, int x, int y, t_fractal *f);
 int			mouse_motion(int x, int y, t_fractal *f);
 int			mouse_release(int button, int x, int y, t_fractal *f);
+void		mouse_zoom(t_fractal *f, int dir);
 int			switch_fractal(int keysym, t_fractal *f);
+
+// ../src/events_q.c
+void		add_event(t_fractal *f, int keysym, t_complex data);
+int			event_loop(t_fractal *f);
+void		process_events(t_fractal *f);
+void		clear_events(t_fractal *f);
+
+
+// ../src/events.c
+int			move(t_fractal *f, int axis, double delta);
+int			inc_iters(t_fractal *f, double delta);
+int			zoom(t_fractal *f, int dir);
+int			recentre(t_fractal *f);
 
 // ../src/colour.c
 int			linear_interpolation(double t, t_fractal *f);
@@ -238,13 +228,8 @@ void		render_chunk(t_fractal *f, int chunk_x, int chunk_y);
 void		render_sidebar(t_fractal *f);
 void		info_clr_init(t_fractal *f);
 
-t_complex	tri_mid(t_tri tri);
 t_complex	normalise(t_complex a, t_complex b, double mag);
-void		init_edges(t_triedge *e, t_complex v1, t_complex v2);
-int			edge_chk(t_complex pt, t_triedge e);
 t_tri		*tri_def(t_tri *tri, t_complex a, t_complex b, t_complex c);
-int			tri_max(t_tri *tri, char axis);
-int			tri_min(t_tri *tri, char axis);
 
 // ../src/em_tri.c
 void		set_exact(t_complex *target, t_complex *src);
@@ -288,3 +273,6 @@ t_complex	ft_complex_sum(t_complex z1, t_complex z2);
 int			is_mandelbulb(double x, double y);
 
 #endif
+
+
+

@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:25:39 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/26 16:25:30 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/27 12:16:18 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -45,9 +45,9 @@ t_complex	map_complex(t_complex *pixel, t_fractal *f)
 {
 	t_complex	map;
 
-	map.x = ((pixel->x / WIDTH) * f->minmax.x + f->minmax.y)
+	map.x = ((pixel->x / WIDTH) * f->range.x + f->range.y)
 		* f->zoom + f->shift.x;
-	map.y = ((pixel->y / HEIGHT) * f->minmax.x + f->minmax.y)
+	map.y = ((pixel->y / HEIGHT) * f->range.x + f->range.y)
 		* f->zoom + f->shift.y;
 	return (map);
 }

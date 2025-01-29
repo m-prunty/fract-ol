@@ -6,7 +6,7 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/23 22:08:07 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/26 16:25:26 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/27 14:49:34 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
@@ -30,6 +30,19 @@ int	error_func(int i, char *info)
 	else if (i == 3)
 		ft_putstr_fd(ERR_MLX, 2);
 	ft_putendl_fd(info, 1);
+	return (0);
+}
+
+int	switch_fractal(int keysym, t_fractal *f)
+{
+	if (keysym == KEY_J)
+		*f->name = 'j';
+	else if (keysym == KEY_M)
+		*f->name = 'm';
+	else if (keysym == KEY_S)
+		*f->name = 's';
+	init_values(f);
+	render_f(f);
 	return (0);
 }
 

@@ -6,10 +6,11 @@
 /*   By: mprunty <mprunty@student.42london.com>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:25:59 by mprunty           #+#    #+#             */
-/*   Updated: 2025/01/26 15:34:47 by mprunty          ###   ########.fr       */
+/*   Updated: 2025/01/29 07:28:29 by mprunty          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "fractol.h"
+#include <stdio.h>
 
 /*
 void	render_sidebar(t_fractal *f)
@@ -63,6 +64,7 @@ void	render_f(t_fractal *f)
 			pixel.y++;
 		}
 	}
+	printf("zoom = %f, shift = %f, %f, centre = %f, %f, mouse= %f, %f, iters= %d\n", f->zoom, f->shift.x, f->shift.y, f->centre.x, f->centre.y, f->mouse.pos.x, f->mouse.pos.y, f->iters);
 	mlx_put_image_to_window(f->mlx_con, f->mlx_win, f->img.img, 0, 0);
 	return ;
 }
